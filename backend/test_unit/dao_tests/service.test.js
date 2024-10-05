@@ -1,4 +1,4 @@
-import { describe, test, expect, jest, afterEach } from "@jest/globals"
+import { describe, test, expect, jest, afterEach } from "@jest/globals";
 import db from "../db/db.mjs"
 
 // import the dao
