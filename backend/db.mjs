@@ -1,5 +1,4 @@
 /** DB access module **/
-
 import sqlite3 from "sqlite3";
 
 // Opening the database

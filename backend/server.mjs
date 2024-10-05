@@ -1,13 +1,14 @@
-import express from 'express';
 import ServiceDao from './dao/service.mjs';
 
+const cors = require('cors');
 const express = require('express');
-const path = require('path');
+//const path = require('path');
 const app = express();
 app.use(express.json());
 
 const serviceDao = new ServiceDao();
 
+/*
 // Server React Project 1
 app.use('/project1', express.static(path.join(__dirname, 'frontend/project1/build')));
 
@@ -29,8 +30,8 @@ app.get('*', (req, res) => {
     res.status(404).send('Not Found');
   }
 });
-
-const PORT = process.env.PORT || 5000;
+*/
+const PORT = 5000;
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });

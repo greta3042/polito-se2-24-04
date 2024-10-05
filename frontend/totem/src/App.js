@@ -12,9 +12,9 @@ function App() {
 
   return (
     <div>
-      {ticket == 0 ? <h1>Select a service</h1> : <h1>Here is your ticket</h1>}
+      {ticket === 0 ? <h1>Select a service</h1> : <h1>Here is your ticket</h1>}
       {/* Shows the QR code if the ticket is received from the back-end */}
-      {ticket != 0 && 
+      {ticket !== 0 && 
         <div>
           <QRCodeCanvas value={ticket} size={200}/>
           <br/>

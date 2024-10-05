@@ -1,4 +1,4 @@
-import db from './db.mjs';
+import db from '../db.mjs';
 import Ticket from '../components/ticket.mjs';
 
 export default function ServiceDao(){
