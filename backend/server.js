@@ -2,13 +2,13 @@ const express = require('express');
 const path = require('path');
 const app = express();
 
-// Serve React Project 1
+// Server React Project 1
 app.use('/project1', express.static(path.join(__dirname, 'frontend/project1/build')));
 
-// Serve React Project 2
+// Server React Project 2
 app.use('/project2', express.static(path.join(__dirname, 'frontend/project2/build')));
 
-// Serve React Project 3
+// Server React Project 3
 app.use('/project3', express.static(path.join(__dirname, 'frontend/project3/build')));
 
 // Fallback to index.html for React Router
