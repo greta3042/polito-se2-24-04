@@ -20,7 +20,7 @@ app.use(cors(corsOptions));
 /* Get ticket API */
 app.get('/api/newTicket', async(req, res) => {
   try{
-    const result = await serviceDao.newTicket(req.body.serviceName);
+    const result = await serviceDao.newTicket(req.query.serviceName);
     if(result.error)
         res.status(404).json(result);
     else
