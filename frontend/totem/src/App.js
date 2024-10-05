@@ -1,25 +1,29 @@
-import logo from './logo.svg';
 import './App.css';
+import React, { useState } from 'react';
+import { QRCodeCanvas } from 'qrcode.react'; // QRCodeCanvas to generate QR code
+import Button from 'react-bootstrap/Button'; // Button import
 
 function App() {
+  const [ticket, setTicket] = useState('10 servizio'); // State for the ticket number
+
+  const removeTicket = () => {
+    setTicket('0');
+  }
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div>
+      {ticket == 0 ? <h1>Select a service</h1> : <h1>Here is your ticket</h1>}
+      {/* Shows the QR code if the ticket is received from the back-end */}
+      {ticket != 0 && 
+        <div>
+          <QRCodeCanvas value={ticket} size={200}/>
+          <br/>
+          <Button variant="primary" onClick={removeTicket}>Get a new ticket</Button> 
+        </div>
+      }
     </div>
   );
 }
 
 export default App;
+
