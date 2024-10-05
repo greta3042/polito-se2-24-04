@@ -1,6 +1,12 @@
+import express from 'express';
+import ServiceDao from './dao/service.mjs';
+
 const express = require('express');
 const path = require('path');
 const app = express();
+app.use(express.json());
+
+const serviceDao = new ServiceDao();
 
 // Server React Project 1
 app.use('/project1', express.static(path.join(__dirname, 'frontend/project1/build')));
@@ -41,3 +47,16 @@ if (!module.parent) {
       console.log(`Server listening at http://localhost:${PORT}`);
   });
 }
+
+/* Get ticket API */
+app.get('/api/newTicket', async(req, res) => {
+  try{
+    const result = await serviceDao.newTicket(req.body.serviceName);
+    if(result.error)
+        res.status(404).json(result);
+    else
+      res.json(result);
+  }catch(err){
+    res.status(500).end();
+  }
+});
