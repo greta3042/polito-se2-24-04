@@ -5,7 +5,9 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "test": "jest"
+    "test": "node ourtest.js",
+    "test_unit": "set NODE_ENV=test && jest --testPathPattern=test_unit",
+    "test_integration": "set NODE_ENV=test && jest --testPathPattern=test_integration"
   },
   "keywords": [],
   "author": "",
