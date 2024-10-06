@@ -8,10 +8,11 @@ function Homepage() {
 
   return (
     <div className="homepage-container">
-      <h1>Welcome to the Homepage</h1>
+      <h1>Counter #n</h1>
+      <h1>Serving #n</h1>
       <div className="button-group">
-        <button onClick={() => handleButtonClick('Button 1')}>Button 1</button>
-        <button onClick={() => handleButtonClick('Button 2')}>Button 2</button>
+        <button onClick={() => handleButtonClick('Button 1')}>Set service code as done</button>
+        <button onClick={() => handleButtonClick('Button 2')}>Call next customer</button>
       </div>
     </div>
   );
