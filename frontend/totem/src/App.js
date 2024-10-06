@@ -1,27 +1,14 @@
+import ChooseService from './ChooseService';
+import QRCodePage from './QRCodePage';
 import './App.css';
-import React, { useState } from 'react';
-import { QRCodeCanvas } from 'qrcode.react'; // QRCodeCanvas to generate QR code
-import Button from 'react-bootstrap/Button'; // Button import
+import { Routes, Route } from 'react-router-dom';
 
 function App() {
-  const [ticket, setTicket] = useState('10 servizio'); // State for the ticket number
-
-  const removeTicket = () => {
-    setTicket('0');
-  }
-
   return (
-    <div>
-      {ticket === 0 ? <h1>Select a service</h1> : <h1>Here is your ticket</h1>}
-      {/* Shows the QR code if the ticket is received from the back-end */}
-      {ticket !== 0 && 
-        <div>
-          <QRCodeCanvas value={ticket} size={200}/>
-          <br/>
-          <Button variant="primary" onClick={removeTicket}>Get a new ticket</Button> 
-        </div>
-      }
-    </div>
+    <Routes>
+    <Route path="/chooseservice" element={<ChooseService />} />
+    <Route path="/qrcodepage" element={<QRCodePage />} />
+    </Routes>
   );
 }
 
