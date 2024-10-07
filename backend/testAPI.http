@@ -1,5 +1,14 @@
 # This file can be used for testing the API with a dedicated Visual Studio Code extension.
 
-## Get a single round game ##
-GET http://localhost:3000/api/newTicket?serviceName=shipping HTTP/1.1
+## Get all avaiable services.
+GET http://localhost:3000/api/services HTTP/1.1
+###
+
+## Get new ticket.
+POST http://localhost:3000/api/newTicket HTTP/1.1
+content-type: application/json
+
+{
+    "serviceName": "shipping"
+}
 ###

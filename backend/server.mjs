@@ -17,10 +17,10 @@ app.use(cors(corsOptions));
 
 /* API */
 
-/* Get ticket API */
-app.get('/api/newTicket', async(req, res) => {
+/* Get all avaiable services API */
+app.get('/api/services', async(req, res) => {
   try{
-    const result = await serviceDao.newTicket(req.query.serviceName);
+    const result = await serviceDao.getServices();
     if(result.error)
         res.status(404).json(result);
     else
@@ -29,6 +29,29 @@ app.get('/api/newTicket', async(req, res) => {
     res.status(500).end();
   }
 });
+
+/*Get new ticket API*/
+app.post('/api/newTicket', async (req, res) => {
+  try {
+    const { serviceName } = req.body;  // Estrarre il serviceName dal body della richiesta
+    if (!serviceName) {
+      return res.status(400).json({ error: 'Missing serviceName in request body' });
+    }
+
+    const result = await serviceDao.newTicket(serviceName);  // Passiamo il serviceName estratto dal body
+    if (result.error) {
+        res.status(404).json(result);
+    } else {
+        res.json({
+            //message: 'Ticket created successfully',
+            ticket: result
+        });
+    }
+  } catch (err) {
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
 
 /* ACTIVATING THE SERVER */
 app.listen(PORT, () => {

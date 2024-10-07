@@ -1,6 +1,7 @@
 /** DB access module **/
 import sqlite3 from "sqlite3";
-import { dbFilePath} from "./path";
+//import { dbFilePath} from "./path";
+import { dbFilePath } from "./path.mjs";
 
 // Opening the database
 const db = new sqlite3.Database(dbFilePath, (err) => {
