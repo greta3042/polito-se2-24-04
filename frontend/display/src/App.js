@@ -1,7 +1,13 @@
-import logo from './logo.svg';
+import React from 'react';
 import './App.css';
 
 function App() {
+  const data = [
+    { code: 'A1', counter: 'C1' },
+    { code: 'A2', counter: 'C2' },
+    // Add more pairs as needed
+  ];
+
   return (
     <div className="App">
       <header className="App-header">
@@ -13,26 +19,12 @@ function App() {
             </tr>
           </thead>
           <tbody>
-            <tr>
-              <td>A1</td>
-              <td>C1</td>
-            </tr>
-            <tr>
-              <td>A2</td>
-              <td>C2</td>
-            </tr>
-            <tr>
-              <td>A3</td>
-              <td>C3</td>
-            </tr>
-            <tr>
-              <td>A4</td>
-              <td>C4</td>
-            </tr>
-            <tr>
-              <td>A5</td>
-              <td>C5</td>
-            </tr>
+            {data.map((item, index) => (
+              <tr key={index}>
+                <td>{item.code}</td>
+                <td>{item.counter}</td>
+              </tr>
+            ))}
           </tbody>
         </table>
       </header>
