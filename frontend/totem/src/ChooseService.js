@@ -16,9 +16,27 @@ function ChooseService() {
   }, []);
 
   const handleServiceClick = (service) => {
-    alert(`You selected ${service}`);
-    navigate('/qrcodepage');
+    fetch('http://localhost:3000/api/newTicket', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ serviceName: service.name }),
+    })
+      .then(response => response.json())
+      .then(data => {
+       // Assumi che data.ticket sia una stringa contenente sia il codice del biglietto che il nome del servizio separati da uno spazio
+       const [code, serviceName] = data.ticket.split(' ');
+
+       console.log('Ticket code:', code);
+       console.log('Service name:', serviceName);
+
+       // Passa il codice e il nome del servizio alla pagina QR code
+       navigate('/qrcodepage', { state: { code, serviceName } });
+      })
+      .catch(error => console.error('Error selecting service:', error));
   };
+
 
   return (
     <div className="choose-service-container">
