@@ -9,7 +9,7 @@ const PORT = 3000;
 app.use(express.json());
 
 const corsOptions = {
-  origin: 'http://localhost:${PORT}',
+  origin: 'http://localhost:3001',
   optionsSuccessStatus: 200,
   credentials: true
 };
