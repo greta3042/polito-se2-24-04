@@ -4,7 +4,7 @@ import express from 'express';
 
 const app = express();
 const serviceDao = new ServiceDao();
-const PORT = 3000;
+const PORT = 3001;
 
 app.use(express.json());
 
@@ -49,6 +49,45 @@ app.post('/api/newTicket', async (req, res) => {
     }
   } catch (err) {
     res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+
+// Call next customer API
+app.post('/api/callNextCustomer', async (req, res) => {
+  try {
+      const { counterId } = req.body; 
+      if (!counterId) {
+          return res.status(400).json({ error: 'Missing counterId' });
+      }
+
+      const result = await serviceDao.callNextCustomer(counterId);  
+      if (result.error) {
+          res.status(404).json(result);
+      } else {
+          res.json({ message: result });
+      }
+  } catch (err) {
+      res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+
+app.post('/api/callNextCustomer', async (req, res) => {
+  try {
+      const { serviceName } = req.body; 
+      if (!serviceName) {
+          return res.status(400).json({ error: 'Missing serviceName' });
+      }
+
+      const result = await serviceDao.callNextCustomer(serviceName);  
+      if (result.error) {
+          res.status(404).json(result);
+      } else {
+          res.json({ message: result });
+      }
+  } catch (err) {
+      res.status(500).json({ error: 'Internal server error' });
   }
 });
 
