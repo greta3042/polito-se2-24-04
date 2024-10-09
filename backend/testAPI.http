@@ -12,3 +12,25 @@ content-type: application/json
     "serviceName": "shipping"
 }
 ###
+
+### Test case for calling the next customer at a specific counter
+POST http://localhost:3001/api/callNextCustomer
+Content-Type: application/json
+
+{
+    "counterId": "1"
+}
+
+
+### Add a new service
+POST http://localhost:3001/api/addService
+Content-Type: application/json
+
+{
+    "name": "Money Order",
+    "serviceTime": 20
+}
+
+ 
+
+ 
