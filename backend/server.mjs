@@ -15,20 +15,6 @@ const corsOptions = {
 };
 app.use(cors(corsOptions));
 
-/* API */
-
-/* Get all avaiable services API */
-app.get('/api/services', async(req, res) => {
-  try{
-    const result = await serviceDao.getServices();
-    if(result.error)
-        res.status(404).json(result);
-    else
-      res.json(result);
-  }catch(err){
-    res.status(500).end();
-  }
-});
 
 /*Get new ticket API*/
 app.post('/api/newTicket', async (req, res) => {
@@ -52,45 +38,7 @@ app.post('/api/newTicket', async (req, res) => {
   }
 });
 
-
-// Call next customer API
-app.post('/api/callNextCustomer', async (req, res) => {
-  try {
-      const { counterId } = req.body; 
-      if (!counterId) {
-          return res.status(400).json({ error: 'Missing counterId' });
-      }
-
-      const result = await serviceDao.callNextCustomer(counterId);  
-      if (result.error) {
-          res.status(404).json(result);
-      } else {
-          res.json({ message: result });
-      }
-  } catch (err) {
-      res.status(500).json({ error: 'Internal server error' });
-  }
-});
-
-
-app.post('/api/callNextCustomer', async (req, res) => {
-  try {
-      const { serviceName } = req.body; 
-      if (!serviceName) {
-          return res.status(400).json({ error: 'Missing serviceName' });
-      }
-
-      const result = await serviceDao.callNextCustomer(serviceName);  
-      if (result.error) {
-          res.status(404).json(result);
-      } else {
-          res.json({ message: result });
-      }
-  } catch (err) {
-      res.status(500).json({ error: 'Internal server error' });
-  }
-});
-
+// Add a service
 app.post('/api/addService', async (req, res) => {
   const { name, serviceTime } = req.body;
   
@@ -107,6 +55,38 @@ app.post('/api/addService', async (req, res) => {
       } else {
           res.status(500).json({ error: 'Internal server error' });
       }
+  }
+});
+
+// List all services
+app.get('/api/services', async (req, res) => {
+  try {
+      const services = await serviceDao.getAllServices();
+      res.json(services);
+  } catch (err) {
+      res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+
+// Call next customer
+app.post('/api/callNextCustomer', async (req, res) => {
+  const { counterId } = req.body; // Ensure you're receiving counterId
+  if (!counterId) {
+      return res.status(400).json({ error: 'Missing counterId in request body' });
+  }
+
+  try {
+      const result = await serviceDao.callNextCustomer(counterId);  
+      if (result.error) {
+          return res.status(404).json(result);
+      }
+
+      // Format the message here
+      const message = `Now serving customer ${result.nextCustomerNumber} at Counter ${result.counterId} for service ${result.serviceName}`;
+      res.json({ message });
+  } catch (err) {
+      res.status(500).json({ error: 'Internal server error' });
   }
 });
 

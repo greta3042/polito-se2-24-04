@@ -1,15 +1,15 @@
 # This file can be used for testing the API with a dedicated Visual Studio Code extension.
 
 ## Get all avaiable services.
-GET http://localhost:3000/api/services HTTP/1.1
+GET http://localhost:3001/api/services HTTP/1.1
 ###
 
 ## Get new ticket.
-POST http://localhost:3000/api/newTicket HTTP/1.1
+POST http://localhost:3001/api/newTicket HTTP/1.1
 content-type: application/json
 
 {
-    "serviceName": "shipping"
+    "serviceName": "Money Order"
 }
 ###
 
@@ -18,9 +18,8 @@ POST http://localhost:3001/api/callNextCustomer
 Content-Type: application/json
 
 {
-    "counterId": "1"
+    "counterId": "4"
 }
-
 
 ### Add a new service
 POST http://localhost:3001/api/addService
@@ -31,6 +30,8 @@ Content-Type: application/json
     "serviceTime": 20
 }
 
- 
+### List all services
+GET http://localhost:3001/api/services
+
 
  
