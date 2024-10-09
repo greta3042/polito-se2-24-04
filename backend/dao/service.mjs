@@ -2,9 +2,9 @@ import db from '../db/db.mjs';
 import Ticket from '../components/ticket.mjs';
 import Service from '../components/service.mjs';
 
-export default function ServiceDao(){
+export default class ServiceDao{
     
-    this.getServices = () => {
+    getServices(){
         return new Promise((resolve, reject) => {
             const query = 'SELECT name, serviceTime FROM Service';
             db.all(query, (err, rows) => {
@@ -22,7 +22,7 @@ export default function ServiceDao(){
         });
     };
 
-    this.newTicket = (serviceName) => {
+    newTicket(serviceName){
         return new Promise((resolve, reject) => {
             const selectQuery = 'SELECT * FROM Service WHERE name=?';
             db.get(selectQuery, [serviceName], (err, row) => {
@@ -47,7 +47,7 @@ export default function ServiceDao(){
         });
     }; 
     
-    this.addService = (name, serviceTime) => {
+    addService(name, serviceTime){
         return new Promise((resolve, reject) => {
             const query = 'INSERT INTO Service (name, serviceTime) VALUES (?, ?)';
             
@@ -60,7 +60,7 @@ export default function ServiceDao(){
         });
     };
     
-this.callNextCustomer = (counterId) => {
+callNextCustomer(counterId){
     return new Promise((resolve, reject) => {
 
         const counterQuery = 'SELECT * FROM Counter WHERE id = ?';

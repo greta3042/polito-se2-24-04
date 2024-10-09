@@ -5,7 +5,7 @@ import express from 'express';
 const app = express();
 const serviceDao = new ServiceDao();
 const PORT = 3001;
-const io = require('socket.io')(app);
+//const io = require('socket.io')(app);
 
 app.use(express.json());
 
@@ -40,7 +40,7 @@ app.post('/api/newTicket', async (req, res) => {
     }
 
     const result = await serviceDao.newTicket(serviceName);  // Passiamo il serviceName estratto dal body
-    if (result.error) {
+    if (!result) {
         res.status(404).json(result);
     } else {
         res.json({
@@ -120,6 +120,8 @@ app.post('/api/addService', async (req, res) => {
 
 
 /* ACTIVATING THE SERVER */
-app.listen(PORT, () => {
+let server = app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
+
+export { app, server }
