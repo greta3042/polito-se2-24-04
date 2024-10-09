@@ -65,3 +65,38 @@ describe("POST newTicket", () => {
         );
     });
 });
+
+describe("GET services", () => {
+    test("Successfully got services", async () => {
+        const service1 = new Service("TestService1",15);
+        const service2 = new Service("TestService2",30);
+        const services = [service1, service2];
+        const spyDao = jest.spyOn(ServiceDao.prototype, "getServices").mockResolvedValueOnce(services);
+
+        const app = (await import("../../server")).app;
+        const response = await request(app).get(baseURL + "services");
+        expect(response.status).toBe(200);
+        expect(response.body).toEqual(services);
+        expect(spyDao).toHaveBeenCalledTimes(1);
+    });
+
+    test("Services not found - error 500", async () => {
+        const spyDao = jest.spyOn(ServiceDao.prototype, "getServices").mockRejectedValueOnce(new Error());
+
+        const app = (await import("../../server")).app;
+        const response = await request(app).get(baseURL + "services");
+
+        expect(response.status).toBe(500);
+        expect(spyDao).toHaveBeenCalledTimes(1);
+    });
+
+    test("No available service - error 404", async () => {
+        const errorTest = {error: 'No available service.'};
+        const spyDao = jest.spyOn(ServiceDao.prototype, "getServices").mockResolvedValueOnce(errorTest);
+
+        const app = (await import("../../server")).app;
+        const response = await request(app).get(baseURL + "services");
+
+        expect(response.status).toBe(404);
+    });
+});
