@@ -91,6 +91,25 @@ app.post('/api/callNextCustomer', async (req, res) => {
   }
 });
 
+app.post('/api/addService', async (req, res) => {
+  const { name, serviceTime } = req.body;
+  
+  if (!name || !serviceTime) {
+      return res.status(400).json({ error: 'name and serviceTime are required' });
+  }
+
+  try {
+      const result = await serviceDao.addService(name, serviceTime);
+      res.status(201).json({ message: 'Service added successfully', serviceId: result });
+  } catch (err) {
+      if (err.message.includes("UNIQUE constraint")) {
+          res.status(409).json({ error: 'Service name must be unique' });
+      } else {
+          res.status(500).json({ error: 'Internal server error' });
+      }
+  }
+});
+
 
 /* ACTIVATING THE SERVER */
 app.listen(PORT, () => {

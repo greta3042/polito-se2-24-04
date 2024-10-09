@@ -45,7 +45,20 @@ export default function ServiceDao(){
                 }
             });
         });
-    };  
+    }; 
+    
+    this.addService = (name, serviceTime) => {
+        return new Promise((resolve, reject) => {
+            const query = 'INSERT INTO Service (name, serviceTime) VALUES (?, ?)';
+            
+            db.run(query, [name, serviceTime], function (err) {
+                if (err) {
+                    return reject(err);
+                }
+                resolve(this.lastID); 
+            });
+        });
+    };
     
 this.callNextCustomer = (counterId) => {
     return new Promise((resolve, reject) => {

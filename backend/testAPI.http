@@ -21,7 +21,15 @@ Content-Type: application/json
     "counterId": "1"
 }
 
- 
+
+### Add a new service
+POST http://localhost:3001/api/addService
+Content-Type: application/json
+
+{
+    "name": "Money Order",
+    "serviceTime": 20
+}
 
  
 
