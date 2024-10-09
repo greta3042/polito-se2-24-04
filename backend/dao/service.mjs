@@ -100,7 +100,7 @@ this.callNextCustomer = (counterId) => {
                     if (err) {
                         return reject(new Error("Error updating service queue"));
                     }
-
+                    
                     resolve(`Now serving customer ${nextCustomerNumber} at Counter ${counterId} for service ${selectedService.name}`);
                 });
             });

@@ -5,6 +5,7 @@ import express from 'express';
 const app = express();
 const serviceDao = new ServiceDao();
 const PORT = 3001;
+const io = require('socket.io')(app);
 
 app.use(express.json());
 
@@ -57,6 +58,7 @@ app.post('/api/newTicket', async (req, res) => {
 app.post('/api/callNextCustomer', async (req, res) => {
   try {
       const { counterId } = req.body; 
+      const cId  = req.body;
       if (!counterId) {
           return res.status(400).json({ error: 'Missing counterId' });
       }
@@ -65,6 +67,12 @@ app.post('/api/callNextCustomer', async (req, res) => {
       if (result.error) {
           res.status(404).json(result);
       } else {
+          // Sends a notification to React client before resolving
+          io.emit('nextCustomer', {
+            counterId: cId,
+            service: result.name,
+            customerNumber: result.nextCustomerNumber
+          });
           res.json({ message: result });
       }
   } catch (err) {
