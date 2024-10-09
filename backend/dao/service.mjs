@@ -11,8 +11,8 @@ export default function ServiceDao(){
                 if(err) {
                     reject(err);  // Se c'è un errore, rigetta la Promise
                 } else {
-                    if(!rows) {
-                        resolve({error: 'No avaiable service.'});
+                    if(!rows || rows.length === 0) {
+                        resolve({error: 'No available service.'});
                     } else {
                         let services = rows.map((s) => new Service(s.name, s.serviceTime));
                         resolve(services);
