@@ -30,13 +30,21 @@ function ChooseService() {
       setCode(data.ticket.split(' ')[0]);
       setServiceName(data.ticket.split(' ')[1]);
 
-       // Passa il codice e il nome del servizio alla pagina QR code
-       navigate('/qrcodepage', { state: { code, serviceName } });
+     
       })
       .catch(error => console.error('Error selecting service:', error));
   };
 
 
+  useEffect(() => {
+    if (code && serviceName) {
+      console.log('Ticket code: ', code);
+      console.log('Service name: ', serviceName);
+
+      // Passa il codice e il nome del servizio alla pagina QR code
+      navigate('/qrcodepage', { state: { code, serviceName } });
+    }
+  }, [code, serviceName]);
 
   return (
     <div className="choose-service-container">
