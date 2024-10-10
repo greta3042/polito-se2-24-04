@@ -74,7 +74,7 @@ export default class ServiceDao{
     };
 */
 
-callNextCustomer(counterId){
+callNextCustomer(counterId) {
     return new Promise((resolve, reject) => {
 
         const counterQuery = 'SELECT * FROM Counter WHERE id = ?';
@@ -98,8 +98,8 @@ callNextCustomer(counterId){
                 let minServiceTime = Infinity;
 
                 for (const service of services) {
-                    const queueLength = service.queueLen; 
-                    const serviceTime = service.serviceTime; 
+                    const queueLength = service.queueLen;
+                    const serviceTime = service.serviceTime;
 
                     if (queueLength > maxQueueLength || 
                         (queueLength === maxQueueLength && serviceTime < minServiceTime)) {
@@ -113,13 +113,16 @@ callNextCustomer(counterId){
                     return resolve({ error: 'No customers in queue for the services handled by this counter' });
                 }
 
-                const nextCustomerNumber = selectedService.currentCustomer; 
-                const updateQueueQuery = 'UPDATE Service SET currentCustomer = currentCustomer - 1, queueLen = queueLen - 1 WHERE name = ?';
-                
+                const nextCustomerNumber = selectedService.currentCustomer;
+                const updateQueueQuery = `
+                    UPDATE Service 
+                    SET currentCustomer = currentCustomer + 1, queueLen = queueLen - 1 
+                    WHERE name = ?`;
+
                 console.log('Updating service:', selectedService); 
                 db.run(updateQueueQuery, [selectedService.name], (err) => {
                     if (err) {
-                        console.error('SQLite Error:', err); 
+                        console.error('SQLite Error:', err);
                         return reject(new Error("Error updating service queue"));
                     }
 
