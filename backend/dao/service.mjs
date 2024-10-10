@@ -2,17 +2,17 @@ import db from '../db/db.mjs';
 import Ticket from '../components/ticket.mjs';
 import Service from '../components/service.mjs';
 
-export default class ServiceDao{
+export default function ServiceDao(){
     
-    getServices(){
+    this.getServices = () => {
         return new Promise((resolve, reject) => {
             const query = 'SELECT name, serviceTime FROM Service';
             db.all(query, (err, rows) => {
                 if(err) {
                     reject(err);  // Se c'è un errore, rigetta la Promise
                 } else {
-                    if(!rows || rows.length === 0) {
-                        resolve({error: 'No available service.'});
+                    if(!rows) {
+                        resolve({error: 'No avaiable service.'});
                     } else {
                         let services = rows.map((s) => new Service(s.name, s.serviceTime));
                         resolve(services);
@@ -22,7 +22,7 @@ export default class ServiceDao{
         });
     };
 
-    newTicket(serviceName){
+    this.newTicket = (serviceName) => {
         return new Promise((resolve, reject) => {
             const selectQuery = 'SELECT * FROM Service WHERE name=?';
             db.get(selectQuery, [serviceName], (err, row) => {
@@ -47,7 +47,7 @@ export default class ServiceDao{
         });
     }; 
     
-    addService(name, serviceTime){
+    this.addService = (name, serviceTime) => {
         return new Promise((resolve, reject) => {
             const query = 'INSERT INTO Service (name, serviceTime) VALUES (?, ?)';
             
@@ -59,8 +59,22 @@ export default class ServiceDao{
             });
         });
     };
-    
-callNextCustomer(counterId){
+
+    this.getAllServices = () => {
+        return new Promise((resolve, reject) => {
+            const query = 'SELECT * FROM Service';
+            
+            db.all(query, (err, rows) => {
+                if (err) {
+                    return reject(err);
+                }
+                resolve(rows);
+            });
+        });
+    };
+
+
+this.callNextCustomer = (counterId) => {
     return new Promise((resolve, reject) => {
 
         const counterQuery = 'SELECT * FROM Counter WHERE id = ?';
@@ -69,7 +83,11 @@ callNextCustomer(counterId){
                 return reject(new Error("Counter not found"));
             }
 
-            const servicesQuery = 'SELECT * FROM Service WHERE name IN (SELECT serviceName FROM CounterService WHERE counterId = ?)';
+            const servicesQuery = `
+                SELECT * FROM Service 
+                WHERE name IN (
+                    SELECT serviceName FROM CounterService WHERE counterId = ?
+                )`;
             db.all(servicesQuery, [counterId], (err, services) => {
                 if (err) {
                     return reject(new Error("Error fetching services for counter"));
@@ -80,11 +98,13 @@ callNextCustomer(counterId){
                 let minServiceTime = Infinity;
 
                 for (const service of services) {
-                    const queueLength = service.queueLen;
+                    const queueLength = service.queueLen; 
+                    const serviceTime = service.serviceTime; 
+
                     if (queueLength > maxQueueLength || 
-                        (queueLength === maxQueueLength && service.serviceTime < minServiceTime)) {
+                        (queueLength === maxQueueLength && serviceTime < minServiceTime)) {
                         maxQueueLength = queueLength;
-                        minServiceTime = service.serviceTime;
+                        minServiceTime = serviceTime;
                         selectedService = service;
                     }
                 }
@@ -94,14 +114,20 @@ callNextCustomer(counterId){
                 }
 
                 const nextCustomerNumber = selectedService.currentCustomer; 
-                const updateQueueQuery = 'UPDATE Service SET currentCustomer = currentCustomer - 1, currentQueueLength = currentQueueLength - 1 WHERE id = ?';
+                const updateQueueQuery = 'UPDATE Service SET currentCustomer = currentCustomer - 1, queueLen = queueLen - 1 WHERE name = ?';
                 
-                db.run(updateQueueQuery, [selectedService.id], (err) => {
+                console.log('Updating service:', selectedService); 
+                db.run(updateQueueQuery, [selectedService.name], (err) => {
                     if (err) {
+                        console.error('SQLite Error:', err); 
                         return reject(new Error("Error updating service queue"));
                     }
-                    
-                    resolve(`Now serving customer ${nextCustomerNumber} at Counter ${counterId} for service ${selectedService.name}`);
+
+                    resolve({
+                        nextCustomerNumber,
+                        counterId,
+                        serviceName: selectedService.name,
+                    });
                 });
             });
         });
