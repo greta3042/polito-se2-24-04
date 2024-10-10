@@ -2,17 +2,17 @@ import db from '../db/db.mjs';
 import Ticket from '../components/ticket.mjs';
 import Service from '../components/service.mjs';
 
-export default function ServiceDao(){
+export default class ServiceDao{
     
-    this.getServices = () => {
+    getServices(){
         return new Promise((resolve, reject) => {
             const query = 'SELECT name, serviceTime FROM Service';
             db.all(query, (err, rows) => {
                 if(err) {
                     reject(err);  // Se c'è un errore, rigetta la Promise
                 } else {
-                    if(!rows) {
-                        resolve({error: 'No avaiable service.'});
+                    if(!rows || rows.length === 0) {
+                        resolve({error: 'No available service.'});
                     } else {
                         let services = rows.map((s) => new Service(s.name, s.serviceTime));
                         resolve(services);
@@ -22,7 +22,7 @@ export default function ServiceDao(){
         });
     };
 
-    this.newTicket = (serviceName) => {
+    newTicket(serviceName){
         return new Promise((resolve, reject) => {
             const selectQuery = 'SELECT * FROM Service WHERE name=?';
             db.get(selectQuery, [serviceName], (err, row) => {
@@ -47,7 +47,7 @@ export default function ServiceDao(){
         });
     }; 
     
-    this.addService = (name, serviceTime) => {
+    addService(name, serviceTime){
         return new Promise((resolve, reject) => {
             const query = 'INSERT INTO Service (name, serviceTime) VALUES (?, ?)';
             
@@ -59,8 +59,8 @@ export default function ServiceDao(){
             });
         });
     };
-
-    this.getAllServices = () => {
+/*
+    getAllServices(){
         return new Promise((resolve, reject) => {
             const query = 'SELECT * FROM Service';
             
@@ -72,9 +72,9 @@ export default function ServiceDao(){
             });
         });
     };
+*/
 
-
-this.callNextCustomer = (counterId) => {
+callNextCustomer(counterId){
     return new Promise((resolve, reject) => {
 
         const counterQuery = 'SELECT * FROM Counter WHERE id = ?';

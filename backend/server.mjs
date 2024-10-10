@@ -97,6 +97,19 @@ app.post('/api/addService', async (req, res) => {
   }
 });
 
+/* Get all available services API */
+app.get('/api/services', async(req, res) => {
+    try{
+      const result = await serviceDao.getServices();
+      if(result.error)
+          res.status(404).json(result);
+      else
+        res.json(result);
+    }catch(err){
+      res.status(500).end();
+    }
+  });
+/*
 // List all services
 app.get('/api/services', async (req, res) => {
   try {
@@ -106,6 +119,7 @@ app.get('/api/services', async (req, res) => {
       res.status(500).json({ error: 'Internal server error' });
   }
 });
+*/
 
 
 // Call next customer
