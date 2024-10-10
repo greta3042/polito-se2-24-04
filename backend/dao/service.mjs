@@ -60,7 +60,7 @@ export default class ServiceDao{
         });
     };
     
-callNextCustomer(counterId){
+this.callNextCustomer = (counterId) => {
     return new Promise((resolve, reject) => {
 
         const counterQuery = 'SELECT * FROM Counter WHERE id = ?';
@@ -69,7 +69,11 @@ callNextCustomer(counterId){
                 return reject(new Error("Counter not found"));
             }
 
-            const servicesQuery = 'SELECT * FROM Service WHERE name IN (SELECT serviceName FROM CounterService WHERE counterId = ?)';
+            const servicesQuery = `
+                SELECT * FROM Service 
+                WHERE name IN (
+                    SELECT serviceName FROM CounterService WHERE counterId = ?
+                )`;
             db.all(servicesQuery, [counterId], (err, services) => {
                 if (err) {
                     return reject(new Error("Error fetching services for counter"));
@@ -80,11 +84,13 @@ callNextCustomer(counterId){
                 let minServiceTime = Infinity;
 
                 for (const service of services) {
-                    const queueLength = service.queueLen;
+                    const queueLength = service.queueLen; 
+                    const serviceTime = service.serviceTime; 
+
                     if (queueLength > maxQueueLength || 
-                        (queueLength === maxQueueLength && service.serviceTime < minServiceTime)) {
+                        (queueLength === maxQueueLength && serviceTime < minServiceTime)) {
                         maxQueueLength = queueLength;
-                        minServiceTime = service.serviceTime;
+                        minServiceTime = serviceTime;
                         selectedService = service;
                     }
                 }
@@ -94,13 +100,15 @@ callNextCustomer(counterId){
                 }
 
                 const nextCustomerNumber = selectedService.currentCustomer; 
-                const updateQueueQuery = 'UPDATE Service SET currentCustomer = currentCustomer - 1, currentQueueLength = currentQueueLength - 1 WHERE id = ?';
+                const updateQueueQuery = 'UPDATE Service SET currentCustomer = currentCustomer - 1, queueLen = queueLen - 1 WHERE name = ?';
                 
-                db.run(updateQueueQuery, [selectedService.id], (err) => {
+                console.log('Updating service:', selectedService); 
+                db.run(updateQueueQuery, [selectedService.name], (err) => {
                     if (err) {
+                        console.error('SQLite Error:', err); 
                         return reject(new Error("Error updating service queue"));
                     }
-                    
+
                     resolve(`Now serving customer ${nextCustomerNumber} at Counter ${counterId} for service ${selectedService.name}`);
                 });
             });
