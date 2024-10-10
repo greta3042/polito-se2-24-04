@@ -14,11 +14,14 @@ function QRCodePage() {
     const timer = setTimeout(() => {
       navigate('/chooseservice');
     }, 60000); // 60000 milliseconds = 1 minute
+    
 
     return () => clearTimeout(timer); // Cleanup the timer on component unmount
   }, [navigate]);
 
-  
+  console.log("code" + code);
+  console.log("serviceName" + serviceName);
+
   const handleBackClick = () => {
     navigate('/chooseservice');
   };
@@ -32,7 +35,7 @@ function QRCodePage() {
           {/* Shows the QR code if the ticket is received from the back-end */}
           {ticket !== 0 && 
             <div>
-              <QRCodeCanvas className='qr_code' value={ticket} size={200}/>
+              <QRCodeCanvas className='qr_code' value={`${code} ${serviceName}`} size={200}/>
               <br/>
               <Button className='new_ticket' variant="primary" onClick={handleBackClick}>Go back to services</Button> 
             </div>

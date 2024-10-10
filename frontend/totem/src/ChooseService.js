@@ -4,8 +4,8 @@ import './ChooseService.css';
 
 function ChooseService() {
   const [services, setServices] = useState([]);
-  const [selectedService, setSelectedService] = useState('');
-  const [data, setData] = useState([]);
+  const [code, setCode] = useState('');
+  const [serviceName, setServiceName] = useState('');
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -26,16 +26,16 @@ function ChooseService() {
       .then(response => response.json())
       .then(data => {
        // Assumi che data.ticket sia una stringa contenente sia il codice del biglietto che il nome del servizio separati da uno spazio
-       const [code, serviceName] = data.ticket.split(' ');
-
-       console.log('Ticket code:', code);
-       console.log('Service name:', serviceName);
+      
+      setCode(data.ticket.split(' ')[0]);
+      setServiceName(data.ticket.split(' ')[1]);
 
        // Passa il codice e il nome del servizio alla pagina QR code
        navigate('/qrcodepage', { state: { code, serviceName } });
       })
       .catch(error => console.error('Error selecting service:', error));
   };
+
 
 
   return (
