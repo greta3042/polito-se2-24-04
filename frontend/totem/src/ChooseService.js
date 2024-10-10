@@ -9,14 +9,14 @@ function ChooseService() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    fetch('http://localhost:3000/api/services')
+    fetch('http://localhost:3001/api/services')
       .then(response => response.json())
       .then(data => setServices(data))
       .catch(error => console.error('Error fetching services:', error));
   }, []);
 
   const handleServiceClick = (service) => {
-    fetch('http://localhost:3000/api/newTicket', {
+    fetch('http://localhost:3001/api/newTicket', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

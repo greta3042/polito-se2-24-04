@@ -7,8 +7,8 @@ import Button from 'react-bootstrap/Button'; // Button import
 function QRCodePage() {
   const location = useLocation();
   const navigate = useNavigate();
-  const [ticket, setTicket] = useState('10 servizio');
   const { code, serviceName } = location.state;
+  const [ticket, setTicket] = useState(code + " " + serviceName);
 
   useEffect(() => {
     const timer = setTimeout(() => {
