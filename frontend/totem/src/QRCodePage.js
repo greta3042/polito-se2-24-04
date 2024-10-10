@@ -1,14 +1,12 @@
 import './QRCodePage.css';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import React, { useEffect, useState } from 'react';
 import { QRCodeCanvas } from 'qrcode.react'; // QRCodeCanvas to generate QR code
 import Button from 'react-bootstrap/Button'; // Button import
 
-function QRCodePage() {
-  const location = useLocation();
+function QRCodePage(props) {
   const navigate = useNavigate();
-  const { code, serviceName } = location.state;
-  const [ticket, setTicket] = useState(code + " " + serviceName);
+  const [ticket, setTicket] = useState(props.code + " " + props.serviceName);
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -19,9 +17,6 @@ function QRCodePage() {
     return () => clearTimeout(timer); // Cleanup the timer on component unmount
   }, [navigate]);
 
-  console.log("code" + code);
-  console.log("serviceName" + serviceName);
-
   const handleBackClick = () => {
     navigate('/chooseservice');
   };
@@ -29,13 +24,13 @@ function QRCodePage() {
   
     return (
         <div className="centered-container">
-           <p>Service Name: {serviceName}</p>
-           <p>Ticket Code: {code}</p>
+           <p>Service Name: {props.serviceName}</p>
+           <p>Ticket Code: {props.code}</p>
           {ticket === 0 ? <h1 className='choose_service_h1'>Select a service</h1> : <h1 className='choose_service_h1'>Here is your ticket</h1>}
           {/* Shows the QR code if the ticket is received from the back-end */}
           {ticket !== 0 && 
             <div>
-              <QRCodeCanvas className='qr_code' value={`${code} ${serviceName}`} size={200}/>
+              <QRCodeCanvas className='qr_code' value={`${props.code} ${props.serviceName}`} size={200}/>
               <br/>
               <Button className='new_ticket' variant="primary" onClick={handleBackClick}>Go back to services</Button> 
             </div>

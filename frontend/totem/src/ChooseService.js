@@ -2,10 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './ChooseService.css';
 
-function ChooseService() {
+function ChooseService(props) {
   const [services, setServices] = useState([]);
-  const [code, setCode] = useState('');
-  const [serviceName, setServiceName] = useState('');
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -27,24 +25,13 @@ function ChooseService() {
       .then(data => {
        // Assumi che data.ticket sia una stringa contenente sia il codice del biglietto che il nome del servizio separati da uno spazio
       
-      setCode(data.ticket.split(' ')[0]);
-      setServiceName(data.ticket.split(' ')[1]);
+      props.setCode(data.ticket.split(' ')[0]);
+      props.setServiceName(data.ticket.split(' ')[1]);
 
-     
+      navigate('/qrcodepage');
       })
       .catch(error => console.error('Error selecting service:', error));
   };
-
-
-  useEffect(() => {
-    if (code && serviceName) {
-      console.log('Ticket code: ', code);
-      console.log('Service name: ', serviceName);
-
-      // Passa il codice e il nome del servizio alla pagina QR code
-      navigate('/qrcodepage', { state: { code, serviceName } });
-    }
-  }, [code, serviceName]);
 
   return (
     <div className="choose-service-container">
