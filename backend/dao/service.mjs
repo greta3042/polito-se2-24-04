@@ -117,6 +117,9 @@ export default class ServiceDao{
                         const queueLength = service.queueLen;
                         const serviceTime = service.serviceTime;
 
+                        console.log("Queue length check:", queueLength, "for service:", service.name);
+
+
                         if (queueLength > maxQueueLength || 
                             (queueLength === maxQueueLength && serviceTime < minServiceTime)) {
                             maxQueueLength = queueLength;

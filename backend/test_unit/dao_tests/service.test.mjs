@@ -102,4 +102,47 @@ describe("callNextCustomer", () => {
         const result = await service.callNextCustomer(counterNumber);
         expect(result).toEqual(nextCustomer);
     });
+
+    test("Counter not found", async () => {
+        jest.spyOn(db, 'get').mockImplementation((sql, params, callback) => {
+            return callback(new Error("Counter not found"));
+        });
+
+        await expect(service.callNextCustomer(99)).rejects.toThrow("Counter not found");
+    });
+
+    test("Error fetching services for counter", async () => {
+        const counterId = 1;
+        jest.spyOn(db, 'get').mockImplementation((sql, params, callback) => {
+            return callback(null, { id: counterId });
+        });
+
+        jest.spyOn(db, 'all').mockImplementation((sql, params, callback) => {
+            return callback(new Error("Error fetching services for counter"));
+        });
+
+        await expect(service.callNextCustomer(counterId)).rejects.toThrow("Error fetching services for counter");
+    });
+    
+    test("Error updating service queue", async () => {
+        const counterId = 1;
+        const mockServices = [
+            { name: "TestService1", queueLen: 5, serviceTime: 15, currentCustomer: 1 }
+        ];
+
+        jest.spyOn(db, 'get').mockImplementation((sql, params, callback) => {
+            return callback(null, { id: counterId });
+        });
+
+        jest.spyOn(db, 'all').mockImplementation((sql, params, callback) => {
+            return callback(null, mockServices);
+        });
+
+        jest.spyOn(db, 'run').mockImplementation((sql, params, callback) => {
+            return callback(new Error("Error updating service queue"));
+        });
+
+        await expect(service.callNextCustomer(counterId)).rejects.toThrow("Error updating service queue");
+    });
+
 });
