@@ -1,20 +1,44 @@
 import ServiceDao from './dao/service.mjs';
 import cors from'cors';
 import express from 'express';
+import { createServer } from 'http';
+import { Server } from 'socket.io'; // Import socket.io using ES modules
 
 const app = express();
 const serviceDao = new ServiceDao();
 const PORT = 3001;
-//const io = require('socket.io')(app);
+const PORT1 = 4001;
 
 app.use(express.json());
+// Create the HTTP server using the Express app
+const server1 = createServer(app);
 
 const corsOptions = {
-  origin: 'http://localhost:3000',
+  origin: ["http://localhost:3000", "http://localhost:3002", "http://localhost:3003", "http://localhost:3004", "http://localhost:3005"],
   optionsSuccessStatus: 200,
   credentials: true
 };
 app.use(cors(corsOptions));
+
+// Initialize a new instance of socket.io
+const io = new Server(server1, {
+  cors: {
+    origin: ["http://localhost:3000", "http://localhost:3002", "http://localhost:3003", "http://localhost:3004", "http://localhost:3005"], // Allow requests from your frontend
+    methods: ["GET", "POST"],
+    credentials: true,
+  },
+});
+
+// Listen for new connections
+io.on('connection', (socket) => {
+  console.log('frontend connected:', socket.id);
+
+  // Handle disconnection
+  socket.on('disconnect', () => {
+    console.log('frontend disconnected');
+  });
+});
+
 
 
 /*Get new ticket API*/
@@ -134,6 +158,13 @@ app.post('/api/callNextCustomer', async (req, res) => {
       if (result.error) {
           return res.status(404).json(result);
       }
+      const cId  = req.body;
+      // Sends a notification to React client before resolving
+      io.emit('nextCustomer', {
+        counterId: cId,
+        service: result.serviceName,
+        customerNumber: result.nextCustomerNumber
+      });
 
       // Format the message here
       const message = `Now serving customer ${result.nextCustomerNumber} at Counter ${result.counterId} for service ${result.serviceName}`;
@@ -147,6 +178,10 @@ app.post('/api/callNextCustomer', async (req, res) => {
 /* ACTIVATING THE SERVER */
 let server = app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
+});
+
+server1.listen(PORT1, () => {
+  console.log(`Socket.io server is running on port ${PORT1}`);
 });
 
 export { app, server }

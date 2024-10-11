@@ -1,6 +1,8 @@
 import React from 'react';
 import './App.css';
 import io from 'socket.io-client';
+import { useEffect } from 'react';
+
 
 function App() {
   const data = [
@@ -8,10 +10,12 @@ function App() {
     { code: 'A2', counter: 'C2' },
     // Add more pairs as needed
   ];
+  // Use the correct backend URL
+  const socket1 = io('http://localhost:4001');
 
   useEffect(() => {
     // server Socket.IO connection
-    const socket = io('http://localhost:3001'); // Backend server URL
+    const socket = io(socket1); // Backend server URL
 
     // Callback called when a notification is received
     socket.on('nextCustomer', (data) => {
@@ -25,7 +29,7 @@ function App() {
     return () => {
         socket.disconnect();
     };
-}, []); // Empty array means that the socket is opened only at the starting at the component and keep listening
+}); // Empty array means that the socket is opened only at the starting at the component and keep listening
 
 
 
