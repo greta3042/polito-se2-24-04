@@ -29,7 +29,7 @@ export default class ServiceDao{
                 if (err) {
                     reject(new Error("Service not found"));  // Se c'è un errore, rigetta la Promise
                 } else {
-                    let ticketNumber = row.currentCustomer + 1;  // Incrementa il numero del cliente
+                    let ticketNumber = row.queueLen + 1;  // Incrementa il numero del cliente
                     const ticket = new Ticket(ticketNumber, serviceName);  // Crea il nuovo biglietto
                     
                     // Aggiorna il numero corrente di clienti e la lunghezza della coda nel DB
