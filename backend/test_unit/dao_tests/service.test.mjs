@@ -82,3 +82,24 @@ describe("GET services", () => {
         expect(result).toEqual(errObj);
     });
 });
+
+describe("callNextCustomer", () => {
+    test("Successfully call next customer", async () => {
+        const counterNumber = 1;
+        const nextCustomer = {nextCustomerNumber: 2, counterId: counterNumber, serviceName: "TestService1"};
+        const spyGet = jest.spyOn(db, 'get')
+            .mockImplementation((sql, params, callback) => {
+                return callback(null, {id: 1});
+            });
+        const spyAll = jest.spyOn(db, 'all')
+            .mockImplementation((sql, params, callback) => {
+                return callback(null, [{name: "TestService1", serviceTime: 15, currentCustomer: 1, queueLen: 3}, {name: "TestService2", serviceTime: 20, currentCustomer: 2, queueLen: 2}]);
+            });
+        const spyRun = jest.spyOn(db, 'run')
+            .mockImplementation((sql, params, callback) => {
+                return callback(null);
+            });
+        const result = await service.callNextCustomer(counterNumber);
+        expect(result).toEqual(nextCustomer);
+    });
+});
