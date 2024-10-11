@@ -80,7 +80,7 @@ export default class ServiceDao{
         return new Promise((resolve, reject) => {
             const counterQuery = 'SELECT * FROM Counter';
             db.all(counterQuery, (err, rows) => {
-                if(err || !rows){
+                if(err || !rows || rows.length === 0){
                     return reject(new Error("No counter found"));
                 }else{
                     let counters = rows.map((c) => new Counter(c.id, c.service));
@@ -105,7 +105,7 @@ export default class ServiceDao{
                         SELECT serviceName FROM CounterService WHERE counterId = ?
                     )`;
                 db.all(servicesQuery, [counterId], (err, services) => {
-                    if (err) {
+                    if (err || services.length === 0) {
                         return reject(new Error("Error fetching services for counter"));
                     }
 
@@ -129,7 +129,7 @@ export default class ServiceDao{
                         return resolve({ error: 'No customers in queue for the services handled by this counter' });
                     }
 
-                    const nextCustomerNumber = selectedService.currentCustomer;
+                    const nextCustomerNumber = selectedService.currentCustomer + 1;
                     const updateQueueQuery = `
                         UPDATE Service 
                         SET currentCustomer = currentCustomer + 1, queueLen = queueLen - 1 
