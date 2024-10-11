@@ -25,17 +25,18 @@ export default class ServiceDao{
     newTicket(serviceName){
         return new Promise((resolve, reject) => {
             const selectQuery = 'SELECT * FROM Service WHERE name=?';
+
             db.get(selectQuery, [serviceName], (err, row) => {
                 if (err) {
                     reject(new Error("Service not found"));  // Se c'è un errore, rigetta la Promise
                 } else {
                     let ticketNumber = row.queueLen + 1;  // Incrementa il numero del cliente
                     const ticket = new Ticket(ticketNumber, serviceName);  // Crea il nuovo biglietto
-                    
+
                     // Aggiorna il numero corrente di clienti e la lunghezza della coda nel DB
-                    const updateQuery = 'UPDATE Service SET queueLen=? WHERE name=?';
-                    const newQueueLen = row.queueLen + 1;  // Incrementa la lunghezza della coda
-                    db.run(updateQuery, [newQueueLen, serviceName], (err) => {
+                    const updateQuery = 'UPDATE Service SET queueLen = ? WHERE name = ?';
+
+                    db.run(updateQuery, [ticketNumber, serviceName], (err) => {
                         if (err) {
                             reject(new Error("Error updating service queue length"));  // Gestisci l'errore
                         } else {
