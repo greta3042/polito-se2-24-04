@@ -1,6 +1,7 @@
 import db from '../db/db.mjs';
 import Ticket from '../components/ticket.mjs';
 import Service from '../components/service.mjs';
+import Counter from '../components/counter.mjs';
 
 export default class ServiceDao{
     
@@ -75,68 +76,82 @@ export default class ServiceDao{
     };
 */
 
-callNextCustomer(counterId) {
-    return new Promise((resolve, reject) => {
+    getCounters() {
+        return new Promise((resolve, reject) => {
+            const counterQuery = 'SELECT * FROM Counter';
+            db.all(counterQuery, (err, rows) => {
+                if(err || !rows){
+                    return reject(new Error("No counter found"));
+                }else{
+                    let counters = rows.map((c) => new Counter(c.id, c.service));
+                    resolve(counters);
+                }
+            })
+        })
+    }
 
-        const counterQuery = 'SELECT * FROM Counter WHERE id = ?';
-        db.get(counterQuery, [counterId], (err, counter) => {
-            if (err || !counter) {
-                return reject(new Error("Counter not found"));
-            }
+    callNextCustomer(counterId) {
+        return new Promise((resolve, reject) => {
 
-            const servicesQuery = `
-                SELECT * FROM Service 
-                WHERE name IN (
-                    SELECT serviceName FROM CounterService WHERE counterId = ?
-                )`;
-            db.all(servicesQuery, [counterId], (err, services) => {
-                if (err) {
-                    return reject(new Error("Error fetching services for counter"));
+            const counterQuery = 'SELECT * FROM Counter WHERE id = ?';
+            db.get(counterQuery, [counterId], (err, counter) => {
+                if (err || !counter) {
+                    return reject(new Error("Counter not found"));
                 }
 
-                let selectedService = null;
-                let maxQueueLength = -1;
-                let minServiceTime = Infinity;
-
-                for (const service of services) {
-                    const queueLength = service.queueLen;
-                    const serviceTime = service.serviceTime;
-
-                    if (queueLength > maxQueueLength || 
-                        (queueLength === maxQueueLength && serviceTime < minServiceTime)) {
-                        maxQueueLength = queueLength;
-                        minServiceTime = serviceTime;
-                        selectedService = service;
-                    }
-                }
-
-                if (!selectedService) {
-                    return resolve({ error: 'No customers in queue for the services handled by this counter' });
-                }
-
-                const nextCustomerNumber = selectedService.currentCustomer;
-                const updateQueueQuery = `
-                    UPDATE Service 
-                    SET currentCustomer = currentCustomer + 1, queueLen = queueLen - 1 
-                    WHERE name = ?`;
-
-                console.log('Updating service:', selectedService); 
-                db.run(updateQueueQuery, [selectedService.name], (err) => {
+                const servicesQuery = `
+                    SELECT * FROM Service 
+                    WHERE name IN (
+                        SELECT serviceName FROM CounterService WHERE counterId = ?
+                    )`;
+                db.all(servicesQuery, [counterId], (err, services) => {
                     if (err) {
-                        console.error('SQLite Error:', err);
-                        return reject(new Error("Error updating service queue"));
+                        return reject(new Error("Error fetching services for counter"));
                     }
 
-                    resolve({
-                        nextCustomerNumber,
-                        counterId,
-                        serviceName: selectedService.name,
+                    let selectedService = null;
+                    let maxQueueLength = -1;
+                    let minServiceTime = Infinity;
+
+                    for (const service of services) {
+                        const queueLength = service.queueLen;
+                        const serviceTime = service.serviceTime;
+
+                        if (queueLength > maxQueueLength || 
+                            (queueLength === maxQueueLength && serviceTime < minServiceTime)) {
+                            maxQueueLength = queueLength;
+                            minServiceTime = serviceTime;
+                            selectedService = service;
+                        }
+                    }
+
+                    if (!selectedService) {
+                        return resolve({ error: 'No customers in queue for the services handled by this counter' });
+                    }
+
+                    const nextCustomerNumber = selectedService.currentCustomer;
+                    const updateQueueQuery = `
+                        UPDATE Service 
+                        SET currentCustomer = currentCustomer + 1, queueLen = queueLen - 1 
+                        WHERE name = ?`;
+
+                    console.log('Updating service:', selectedService); 
+                    db.run(updateQueueQuery, [selectedService.name], (err) => {
+                        if (err) {
+                            console.error('SQLite Error:', err);
+                            return reject(new Error("Error updating service queue"));
+                        }
+
+                        resolve({
+                            nextCustomerNumber,
+                            counterId,
+                            serviceName: selectedService.name,
+                        });
                     });
                 });
             });
         });
-    });
-};
+    };
 
     
 }

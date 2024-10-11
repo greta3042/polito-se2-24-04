@@ -13,6 +13,10 @@ content-type: application/json
 }
 ###
 
+## Get all counters.
+GET http://localhost:3001/api/counters
+###
+
 ### Test case for calling the next customer at a specific counter
 POST http://localhost:3001/api/callNextCustomer
 Content-Type: application/json
@@ -32,6 +36,7 @@ Content-Type: application/json
 
 ### List all services
 GET http://localhost:3001/api/services
+
 
 
  

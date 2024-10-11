@@ -133,6 +133,7 @@ app.get('/api/services', async(req, res) => {
       res.status(500).end();
     }
   });
+
 /*
 // List all services
 app.get('/api/services', async (req, res) => {
@@ -144,6 +145,19 @@ app.get('/api/services', async (req, res) => {
   }
 });
 */
+
+/* Get all counters API */
+app.get('/api/counters', async(req, res) => {
+  try{
+    const result = await serviceDao.getCounters();
+    if(result.error)
+        res.status(404).json(result);
+    else
+      res.json(result);
+  }catch(err){
+    res.status(500).end();
+  }
+});
 
 
 // Call next customer
