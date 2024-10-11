@@ -1,4 +1,5 @@
 import { describe, test, expect, jest, afterEach } from "@jest/globals";
+import { server, socket } from "../../server.mjs";
 import request from "supertest";
 import db from "../../db/db.mjs";
 
@@ -9,11 +10,6 @@ const service = new ServiceDao();
 
 // define baseurl
 const baseURL = "/api/";
-let server;
-
-beforeAll(async () => {
-    server = (await import("../../server")).server;
-});
 
 afterEach(()=>{
     jest.restoreAllMocks();
@@ -21,6 +17,7 @@ afterEach(()=>{
 
 afterAll(() => {
     server.close();
+    socket.close();
 });
 
 describe("POST newTicket", () => {
@@ -98,5 +95,20 @@ describe("GET services", () => {
         const response = await request(app).get(baseURL + "services");
 
         expect(response.status).toBe(404);
+    });
+});
+
+describe("POST callNextCustomer", () => {
+    test("Successfully call next customer", async () => {
+        const counterNumber = 1;
+        const nextCustomer = {nextCustomerNumber: 2, counterId: counterNumber, serviceName: "TestService1"};
+        const message = {message: `Now serving customer ${nextCustomer.nextCustomerNumber} at Counter ${nextCustomer.counterId} for service ${nextCustomer.serviceName}`};
+        const spyDao = jest.spyOn(ServiceDao.prototype, "callNextCustomer").mockResolvedValueOnce(nextCustomer);
+
+        const app = (await import("../../server")).app;
+        const response = (await request(app).post(baseURL + "callNextCustomer").send({counterId: counterNumber}));
+        expect(response.status).toBe(200);
+        expect(response.body).toEqual(message);
+        expect(spyDao).toHaveBeenCalledTimes(1);
     });
 });

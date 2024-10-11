@@ -63,7 +63,7 @@ app.post('/api/newTicket', async (req, res) => {
   }
 });
 
-
+/*
 // Call next customer API
 app.post('/api/callNextCustomer', async (req, res) => {
   try {
@@ -101,7 +101,7 @@ app.post('/api/callNextCustomer', async (req, res) => {
       res.status(500).json({ error: 'Internal server error' });
   }
 });
-
+*/
 app.post('/api/addService', async (req, res) => {
   const { name, serviceTime } = req.body;
   
@@ -194,8 +194,8 @@ let server = app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
 
-server1.listen(PORT1, () => {
+let socket = server1.listen(PORT1, () => {
   console.log(`Socket.io server is running on port ${PORT1}`);
 });
 
-export { app, server }
+export { app, server, socket }
