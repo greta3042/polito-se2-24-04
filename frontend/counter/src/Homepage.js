@@ -1,7 +1,8 @@
-import React from 'react';
+import React, {useState} from 'react';
 import './Homepage.css';
 
 function Homepage({counterId}) {
+
   const handleButtonClick = (buttonName) => {
     alert(`You clicked ${buttonName}`);
   };
@@ -30,7 +31,6 @@ function Homepage({counterId}) {
   return (
     <div className="homepage-container">
       <h1>Counter {counterId}</h1>
-      <h1>Serving #n</h1>
       <div className="button-group">
         <button onClick={() => handleButtonClick('Button 1')}>Set service code as done</button>
         <button onClick={() => handleButtonClick2()}>Call next customer</button>
