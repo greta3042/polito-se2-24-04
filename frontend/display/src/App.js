@@ -1,15 +1,12 @@
-import React from 'react';
+import React, {useState} from 'react';
 import './App.css';
 import io from 'socket.io-client';
 import { useEffect } from 'react';
 
 
 function App() {
-  const data = [
-    { code: 'A1', counter: 'C1' },
-    { code: 'A2', counter: 'C2' },
-    // Add more pairs as needed
-  ];
+  const [notifications, setNotifications] = useState([]);
+  
   // Use the correct backend URL
   const socket1 = io('http://localhost:4001');
 
@@ -20,7 +17,7 @@ function App() {
     // Callback called when a notification is received
     socket.on('nextCustomer', (data) => {
         console.log(`Notify received: Next customer ${data.customerNumber} service: ${data.service} counter; ${data.counterId}`);
-        
+        setNotifications((prevNotifications) => [...prevNotifications, data]);
         // Update the state with information to display for counters
         // to do
     });
@@ -44,12 +41,11 @@ function App() {
             </tr>
           </thead>
           <tbody>
-            {data.map((item, index) => (
-              <tr key={index}>
-                <td>{item.code}</td>
-                <td>{item.counter}</td>
-              </tr>
-            ))}
+          {notifications.map((notification, index) => (
+            <li key={index}>
+              Next customer {notification.customerNumber} service: {notification.service} counter: {notification.counterId}
+            </li>
+          ))}
           </tbody>
         </table>
       </header>

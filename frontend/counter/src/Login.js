@@ -1,10 +1,28 @@
-import React, { useState } from 'react';
+import React, {useEffect} from 'react';
 import { useNavigate } from 'react-router-dom';
 import './Login.css';
 
-function Login() {
-  const [username, setUsername] = useState('');
+function Login({ counterId, setCounterId, counters, setCounters }) {
+  
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const fetchCounters = async () => {
+      try {
+        const response = await fetch('http://localhost:3001/api/counters');
+        const result = await response.json();
+        if (response.ok) {
+          setCounters(result);
+        } else {
+          console.error('Error fetching counters:', result.error);
+        }
+      } catch (error) {
+        console.error('Error fetching counters:', error);
+      }
+    };
+    fetchCounters();
+  }, []);
+
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -20,15 +38,16 @@ function Login() {
           <label htmlFor="counter">Counter:</label>
           <select
             id="counter"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
+            value={counterId}
+            onChange={(e) => setCounterId(e.target.value)}
             required
           >
-            <option value="c1">c1</option>
-            <option value="c2">c2</option>
-            <option value="c3">c3</option>
-            <option value="c4">c4</option>
-            <option value="c5">c5</option>
+           <option value="">Select a counter</option>
+            {counters.map((counter) => (
+              <option key={counter.id} value={counter.id}>
+                {counter.id}
+              </option>
+            ))}
           </select>
         </div>
         <button type="submit">Login</button>
