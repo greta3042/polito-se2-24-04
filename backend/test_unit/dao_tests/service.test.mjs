@@ -4,6 +4,8 @@ import db from "../../db/db.mjs"
 // import the dao
 import ServiceDao from "../../dao/service.mjs"
 import Service from "../../components/service.mjs"
+import Counter from "../../components/counter.mjs"
+
 const service = new ServiceDao();
 
 afterEach(()=>{
@@ -143,6 +145,35 @@ describe("callNextCustomer", () => {
         });
 
         await expect(service.callNextCustomer(counterId)).rejects.toThrow("Error updating service queue");
+    });
+
+});
+
+
+describe("getCounters", () => {
+    test("Successfully retrieves a list of counters", async () => {
+        const mockRows = [
+            { id: 1, service: 'ServiceA' },
+            { id: 2, service: 'ServiceB' }
+        ];
+
+        jest.spyOn(db, 'all').mockImplementation((query, callback) => {
+            callback(null, mockRows);
+        });
+
+        const counters = await service.getCounters(); 
+        expect(counters).toEqual([
+            new Counter(1, 'ServiceA'),
+            new Counter(2, 'ServiceB')
+        ]);
+    });
+
+    test("No counters found", async () => {
+        jest.spyOn(db, 'all').mockImplementation((query, callback) => {
+            callback(null, []); 
+        });
+
+        await expect(service.getCounters()).rejects.toThrow("No counter found");
     });
 
 });

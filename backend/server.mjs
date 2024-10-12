@@ -147,15 +147,16 @@ app.get('/api/services', async (req, res) => {
 */
 
 /* Get all counters API */
-app.get('/api/counters', async(req, res) => {
-  try{
-    const result = await serviceDao.getCounters();
-    if(result.error)
-        res.status(404).json(result);
-    else
+app.get('/api/counters', async (req, res) => {
+  try {
+      const result = await serviceDao.getCounters();
       res.json(result);
-  }catch(err){
-    res.status(500).end();
+  } catch (err) {
+      if (err.message === "No counter found") {
+          res.status(404).json({ error: "No counter found" });
+      } else {
+        res.status(500).json({ error: "Internal server error" }); 
+      }
   }
 });
 
