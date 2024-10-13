@@ -8,16 +8,16 @@ function App() {
   const [notifications, setNotifications] = useState([]);
   
   // Use the correct backend URL
-  const socket1 = io('http://localhost:4001');
+  
 
   useEffect(() => {
-    // server Socket.IO connection
-    const socket = io(socket1); // Backend server URL
+    const socket = io('http://localhost:4001'); // Backend server URL
 
     // Callback called when a notification is received
     socket.on('nextCustomer', (data) => {
         console.log(`Notify received: Next customer ${data.customerNumber} service: ${data.service} counter; ${data.counterId}`);
-        setNotifications((prevNotifications) => [...prevNotifications, data]);
+        const { customerNumber, service, counterId } = data;
+        setNotifications((prevNotifications) => [...prevNotifications, {customerNumber, service, counterId}]);
         // Update the state with information to display for counters
         // to do
     });
@@ -42,9 +42,9 @@ function App() {
           </thead>
           <tbody>
           {notifications.map((notification, index) => (
-            <li key={index}>
-              Next customer {notification.customerNumber} service: {notification.service} counter: {notification.counterId}
-            </li>
+             <tr key={index}>
+             <td>{notification.customerNumber}</td>
+           </tr>
           ))}
           </tbody>
         </table>

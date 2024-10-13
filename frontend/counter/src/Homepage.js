@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React from 'react';
 import './Homepage.css';
 
 function Homepage({counterId}) {
@@ -14,7 +14,7 @@ function Homepage({counterId}) {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ counterId }), // Usa il counterId dalle props
+        body: JSON.stringify({counterId}), // Usa il counterId dalle props
       });
 
       const result = await response.json();
