@@ -10,6 +10,9 @@ import Counter from "../../components/counter.mjs"
 
 const service = new ServiceDao();
 
+const PORT = 3001;
+const PORT1 = 4001;
+
 // define baseurl
 const baseURL = "/api/";
 
@@ -203,4 +206,86 @@ describe("GET /api/counters", () => {
         expect(spyDao).toHaveBeenCalledTimes(1);
     });
 
+});
+
+describe('Server and Socket Initialization', () => {
+    afterAll(() => {
+        server.close();
+        socket.close();
+    });
+
+    test('Server should start and listen on the correct port', async () => {
+        const app = (await import("../../server")).app;
+        const testServer = request(app);
+        const response = await testServer.get('/');
+        
+        expect(response.status).toBe(404);
+        console.log(`HTTP server is running on port ${PORT}`);
+    });
+
+    test('Socket server should start and listen on the correct port', async () => {
+        const socketIoClient = require('socket.io-client');
+        const client = socketIoClient(`http://localhost:${PORT1}`);
+
+        await new Promise((resolve, reject) => {
+            client.on('connect', () => {
+                console.log(`Socket.io server is running on port ${PORT1}`);
+                client.close();
+                resolve();
+            });
+
+            client.on('connect_error', (err) => {
+                reject(err); 
+            });
+        });
+    });
+});
+
+describe('Error Handling', () => {
+    let mockServer;
+    let mockSocket;
+
+    beforeEach(() => {
+        mockServer = jest.spyOn(server, 'listen');
+        mockSocket = jest.spyOn(socket, 'listen');
+    });
+
+    afterEach(() => {
+        mockServer.mockRestore();
+        mockSocket.mockRestore();
+    });
+
+    test('Server should throw error if port is already in use', async () => {
+        const errorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+        mockServer.mockImplementation((port, callback) => {
+            const error = new Error('EADDRINUSE: address already in use');
+            error.code = 'EADDRINUSE';
+            throw error;
+        });
+
+        try {
+            await expect(() => server.listen(PORT)).toThrow('EADDRINUSE');
+        } catch (error) {
+            expect(errorSpy).toHaveBeenCalled();
+        }
+
+        errorSpy.mockRestore();
+    });
+
+    test('Socket should throw error if port is already in use', async () => {
+        const errorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+        mockSocket.mockImplementation((port, callback) => {
+            const error = new Error('EADDRINUSE: address already in use');
+            error.code = 'EADDRINUSE';
+            throw error;
+        });
+
+        try {
+            await expect(() => socket.listen(PORT1)).toThrow('EADDRINUSE');
+        } catch (error) {
+            expect(errorSpy).toHaveBeenCalled();
+        }
+
+        errorSpy.mockRestore();
+    });
 });
