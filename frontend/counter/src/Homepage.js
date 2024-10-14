@@ -22,6 +22,7 @@ function Homepage({counterId}) {
         console.log('Next customer called:', result.message);
       } else {
         console.error('Error calling next customer:', result.error);
+        alert(`${result.error}`);
       }
     } catch (error) {
       console.error('Error calling next customer:', error);
