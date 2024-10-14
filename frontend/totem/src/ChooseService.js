@@ -1,41 +1,36 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import './ChooseService.css';
 
-function ChooseService() {
-  const services = ['Service 1', 'Service 2', 'Service 3', 'Service 4'];
+function ChooseService(props) {
+  const [services, setServices] = useState([]);
+  const navigate = useNavigate();
 
-  const [selectedService, setSelectedService] = useState(null);
-  const [ticketNumber, setTicketNumber] = useState(null);
-  const [error, setError] = useState(null); 
-  const [loading, setLoading] = useState(false); 
+  useEffect(() => {
+    fetch('http://localhost:3001/api/services')
+      .then(response => response.json())
+      .then(data => setServices(data))
+      .catch(error => console.error('Error fetching services:', error));
+  }, []);
 
+  const handleServiceClick = (service) => {
+    fetch('http://localhost:3001/api/newTicket', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ serviceName: service.name }),
+    })
+      .then(response => response.json())
+      .then(data => {
+       // Assumi che data.ticket sia una stringa contenente sia il codice del biglietto che il nome del servizio separati da uno spazio
+      
+      props.setCode(data.ticket.split(' ')[0]);
+      props.setServiceName(data.ticket.split(' ')[1]);
 
-  // Function to handle the click event and make API request
-  const handleServiceClick = async (service) => {
-    setSelectedService(service);
-    setError(null);
-    setLoading(true); 
-
-    try {
-      const response = await fetch(`/api/newTicket?serviceName=${service}`, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        credentials: 'include' 
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to generate ticket. Please try again.');
-      }
-
-      const data = await response.json();
-      setTicketNumber(data.ticketNumber); 
-    } catch (err) {
-      setError(err.message); 
-    } finally {
-      setLoading(false); 
-    }
+      navigate('/qrcodepage');
+      })
+      .catch(error => console.error('Error selecting service:', error));
   };
 
   return (
@@ -43,30 +38,11 @@ function ChooseService() {
       <h1 className="choose-service-title">Choose a Service</h1>
       <div className="services-list">
         {services.map((service, index) => (
-          <button
-            className="button_service"
-            key={index}
-            onClick={() => handleServiceClick(service)}
-            disabled={loading} 
-          >
-            {service}
+          <button className="button_service" key={index} onClick={() => handleServiceClick(service)}>
+            {service.name}
           </button>
         ))}
       </div>
-
-      
-      {loading && <p>Generating your ticket...</p>}
-
-      
-      {selectedService && ticketNumber && (
-        <div className="ticket-info">
-          <h2>You selected: {selectedService}</h2>
-          <p>Your ticket number is: <strong>{ticketNumber}</strong></p>
-        </div>
-      )}
-
-      
-      {error && <p style={{ color: 'red' }}>{error}</p>}
     </div>
   );
 }
