@@ -109,7 +109,7 @@ export default class ServiceDao{
                     }
     
                     let selectedService = null;
-                    let maxQueueLength = -1;
+                    let maxQueueLength = 0;
                     let minServiceTime = Infinity;
     
                     for (const service of services) {
