@@ -15,7 +15,7 @@ function App() {
 
     // Callback called when a notification is received
     socket.on('nextCustomer', (data) => {
-        console.log(`Notify received: Next customer ${data.customerNumber} service: ${data.service} counter; ${data.counterId}`);
+        console.log(`Notify received: Next customer ${data.customerNumber} service: ${data.service} counter: ${data.counterId}`);
         const { customerNumber, service, counterId } = data;
         setNotifications((prevNotifications) => [...prevNotifications, {customerNumber, service, counterId}]);
         // Update the state with information to display for counters
@@ -44,6 +44,7 @@ function App() {
           {notifications.map((notification, index) => (
              <tr key={index}>
              <td>{notification.customerNumber}</td>
+              <td>{notification.counterId}</td>
            </tr>
           ))}
           </tbody>
