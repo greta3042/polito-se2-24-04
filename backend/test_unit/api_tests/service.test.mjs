@@ -113,6 +113,49 @@ describe("POST callNextCustomer", () => {
         expect(response.body).toEqual(message);
         expect(spyDao).toHaveBeenCalledTimes(1);
     });
+
+    test("No counters found - error 404", async () => {
+        const counterNumber = 1;
+        const errorMessage = { error: 'Counter not found' };
+
+        const spyDao = jest.spyOn(ServiceDao.prototype, "callNextCustomer").mockRejectedValueOnce(new Error("Counter not found"));
+
+        const app = (await import("../../server")).app;
+        const response = await request(app).post(baseURL + "callNextCustomer").send({ counterId: counterNumber });
+        
+        expect(response.status).toBe(404);
+        expect(response.body).toEqual(errorMessage);
+        expect(spyDao).toHaveBeenCalledTimes(1);
+    });
+
+    test("Error fetching services - error 500", async () => {
+        const counterId = 1;
+        const errorMessage = { error: 'Error fetching services for counter' };
+        
+        const spyDao = jest.spyOn(ServiceDao.prototype, "callNextCustomer").mockRejectedValueOnce(new Error("Error fetching services for counter"));
+    
+        const app = (await import("../../server")).app;
+        const response = await request(app).post(baseURL + "callNextCustomer").send({ counterId });
+        
+        expect(response.status).toBe(500);
+        expect(response.body).toEqual({ error: 'Error fetching services for counter' });
+        expect(spyDao).toHaveBeenCalledTimes(1);
+    });
+
+    test("No customers in queue - error 404", async () => {
+        const counterId = 1;
+        const expectedResponse = { error: 'No customers in queue for the services handled by this counter' };
+    
+        const spyDao = jest.spyOn(ServiceDao.prototype, "callNextCustomer").mockResolvedValueOnce({ error: 'No customers in queue for the services handled by this counter' });
+    
+        const app = (await import("../../server")).app;
+        const response = await request(app).post(baseURL + "callNextCustomer").send({ counterId });
+        
+        expect(response.status).toBe(404); 
+        expect(response.body).toEqual(expectedResponse);
+        expect(spyDao).toHaveBeenCalledTimes(1);
+    });
+    
 });
 
 

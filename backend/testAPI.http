@@ -22,7 +22,7 @@ POST http://localhost:3001/api/callNextCustomer
 Content-Type: application/json
 
 {
-    "counterId": "1"
+    "counterId": "2"
 }
 
 ### Add a new service

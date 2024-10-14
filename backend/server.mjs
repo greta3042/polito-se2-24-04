@@ -163,31 +163,41 @@ app.get('/api/counters', async (req, res) => {
 
 // Call next customer
 app.post('/api/callNextCustomer', async (req, res) => {
-  const { counterId } = req.body; // Ensure you're receiving counterId
+  const { counterId } = req.body;
+
   if (!counterId) {
       return res.status(400).json({ error: 'Missing counterId in request body' });
   }
 
   try {
-      const result = await serviceDao.callNextCustomer(counterId);  
+      const result = await serviceDao.callNextCustomer(counterId);
+
       if (result.error) {
-          return res.status(404).json(result);
+          return res.status(404).json(result); 
       }
-      const cId  = req.body;
-      // Sends a notification to React client before resolving
+
       io.emit('nextCustomer', {
-        counterId: cId,
-        service: result.serviceName,
-        customerNumber: result.nextCustomerNumber
+          counterId: result.counterId,
+          service: result.serviceName,
+          customerNumber: result.nextCustomerNumber,
       });
 
-      // Format the message here
-      const message = `Now serving customer ${result.nextCustomerNumber} at Counter ${result.counterId} for service ${result.serviceName}`;
-      res.json({ message });
-  } catch (err) {
-      res.status(500).json({ error: 'Internal server error' });
+      res.status(200).json({
+          message: `Now serving customer ${result.nextCustomerNumber} at Counter ${result.counterId} for service ${result.serviceName}`,
+      });
+  } catch (error) {
+      if (error.message === "Counter not found") {
+          return res.status(404).json({ error: 'Counter not found' });
+      }
+      if (error.message === "Error fetching services for counter") {
+          return res.status(500).json({ error: 'Error fetching services for counter' });
+      }
+
+      console.error('Internal server error:', error); 
+      res.status(500).json({ error: 'Internal Server Error' });
   }
 });
+
 
 
 /* ACTIVATING THE SERVER */

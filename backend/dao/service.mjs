@@ -92,13 +92,12 @@ export default class ServiceDao{
 
     callNextCustomer(counterId) {
         return new Promise((resolve, reject) => {
-
             const counterQuery = 'SELECT * FROM Counter WHERE id = ?';
             db.get(counterQuery, [counterId], (err, counter) => {
                 if (err || !counter) {
                     return reject(new Error("Counter not found"));
                 }
-
+    
                 const servicesQuery = `
                     SELECT * FROM Service 
                     WHERE name IN (
@@ -108,43 +107,40 @@ export default class ServiceDao{
                     if (err || services.length === 0) {
                         return reject(new Error("Error fetching services for counter"));
                     }
-
+    
                     let selectedService = null;
                     let maxQueueLength = -1;
                     let minServiceTime = Infinity;
-
+    
                     for (const service of services) {
                         const queueLength = service.queueLen;
                         const serviceTime = service.serviceTime;
-
-                        console.log("Queue length check:", queueLength, "for service:", service.name);
-
-
-                        if (queueLength > maxQueueLength || 
-                            (queueLength === maxQueueLength && serviceTime < minServiceTime)) {
-                            maxQueueLength = queueLength;
-                            minServiceTime = serviceTime;
-                            selectedService = service;
+    
+                        if (queueLength > 0) {
+                            if (queueLength > maxQueueLength || 
+                                (queueLength === maxQueueLength && serviceTime < minServiceTime)) {
+                                maxQueueLength = queueLength;
+                                minServiceTime = serviceTime;
+                                selectedService = service;
+                            }
                         }
                     }
-
+    
                     if (!selectedService) {
-                        return resolve({ error: 'No customers in queue for the services handled by this counter' });
+                        return resolve({ error: 'No customers in queue for the services handled by this counter' }); 
                     }
-
+    
                     const nextCustomerNumber = selectedService.currentCustomer + 1;
                     const updateQueueQuery = `
                         UPDATE Service 
                         SET currentCustomer = currentCustomer + 1, queueLen = queueLen - 1 
                         WHERE name = ?`;
-
-                    console.log('Updating service:', selectedService); 
+    
                     db.run(updateQueueQuery, [selectedService.name], (err) => {
                         if (err) {
-                            console.error('SQLite Error:', err);
                             return reject(new Error("Error updating service queue"));
                         }
-
+    
                         resolve({
                             nextCustomerNumber,
                             counterId,
@@ -154,7 +150,8 @@ export default class ServiceDao{
                 });
             });
         });
-    };
-
+    }
+    
+    
     
 }

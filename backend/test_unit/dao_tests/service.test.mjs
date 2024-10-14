@@ -147,6 +147,36 @@ describe("callNextCustomer", () => {
         await expect(service.callNextCustomer(counterId)).rejects.toThrow("Error updating service queue");
     });
 
+    test("No customers in queue for the services handled by counter", async () => {
+        const counterId = 1;
+    
+        const spyGetCounter = jest.spyOn(db, 'get')
+            .mockImplementation((query, params, callback) => {
+                if (query.includes('SELECT * FROM Counter')) {
+                    return callback(null, { id: counterId, name: 'Counter1' });
+                }
+            });
+    
+        const spyGetCounterServices = jest.spyOn(db, 'all')
+            .mockImplementation((query, params, callback) => {
+                if (query.includes('SELECT * FROM Service')) {
+
+                    return callback(null, [
+                        { name: 'TestService1', queueLen: 0, serviceTime: 15, currentCustomer: 1 },
+                        { name: 'TestService2', queueLen: 0, serviceTime: 10, currentCustomer: 2 }
+                    ]);
+                }
+            });
+    
+        const service = new ServiceDao();
+        const result = await service.callNextCustomer(counterId);
+    
+        expect(result).toEqual({ error: 'No customers in queue for the services handled by this counter' });
+        
+        spyGetCounter.mockRestore();
+        spyGetCounterServices.mockRestore();
+    });    
+
 });
 
 
