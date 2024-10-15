@@ -63,45 +63,7 @@ app.post('/api/newTicket', async (req, res) => {
   }
 });
 
-/*
-// Call next customer API
-app.post('/api/callNextCustomer', async (req, res) => {
-  try {
-      const { counterId } = req.body; 
-      if (!counterId) {
-          return res.status(400).json({ error: 'Missing counterId' });
-      }
-
-      const result = await serviceDao.callNextCustomer(counterId);  
-      if (result.error) {
-          res.status(404).json(result);
-      } else {
-          res.json({ message: result });
-      }
-  } catch (err) {
-      res.status(500).json({ error: 'Internal server error' });
-  }
-});
-
-
-app.post('/api/callNextCustomer', async (req, res) => {
-  try {
-      const { serviceName } = req.body; 
-      if (!serviceName) {
-          return res.status(400).json({ error: 'Missing serviceName' });
-      }
-
-      const result = await serviceDao.callNextCustomer(serviceName);  
-      if (result.error) {
-          res.status(404).json(result);
-      } else {
-          res.json({ message: result });
-      }
-  } catch (err) {
-      res.status(500).json({ error: 'Internal server error' });
-  }
-});
-*/
+// Add services
 app.post('/api/addService', async (req, res) => {
   const { name, serviceTime } = req.body;
   
@@ -134,17 +96,6 @@ app.get('/api/services', async(req, res) => {
     }
   });
 
-/*
-// List all services
-app.get('/api/services', async (req, res) => {
-  try {
-      const services = await serviceDao.getAllServices();
-      res.json(services);
-  } catch (err) {
-      res.status(500).json({ error: 'Internal server error' });
-  }
-});
-*/
 
 /* Get all counters API */
 app.get('/api/counters', async (req, res) => {

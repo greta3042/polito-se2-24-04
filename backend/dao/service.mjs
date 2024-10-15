@@ -61,20 +61,6 @@ export default class ServiceDao{
             });
         });
     };
-/*
-    getAllServices(){
-        return new Promise((resolve, reject) => {
-            const query = 'SELECT * FROM Service';
-            
-            db.all(query, (err, rows) => {
-                if (err) {
-                    return reject(err);
-                }
-                resolve(rows);
-            });
-        });
-    };
-*/
 
     getCounters() {
         return new Promise((resolve, reject) => {
