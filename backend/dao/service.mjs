@@ -2,6 +2,7 @@ import db from '../db/db.mjs';
 import Ticket from '../components/ticket.mjs';
 import Service from '../components/service.mjs';
 import Counter from '../components/counter.mjs';
+import dayjs from 'dayjs';
 
 export default class ServiceDao{
     
@@ -126,7 +127,37 @@ export default class ServiceDao{
                         if (err) {
                             return reject(new Error("Error updating service queue"));
                         }
-    
+
+                        const todayDate = dayjs();
+                        const today = todayDate.format('YYYY-MM-DD');
+                        const getStatQuery = `SELECT *
+                                            FROM Stat
+                                            WHERE idCounter = ? AND date = ? AND nameService = ?`
+                        db.get(getStatQuery, [counterId, today, selectedService.name], (err, row) => {
+                            if (err) {
+                                return reject(new Error("Error accessing the Stat table"));
+                            }
+                            if(!row){
+                                const insertStatQuery = `INSERT INTO Stat(idCounter, date, nameService, numCustomers)
+                                                        VALUES (?, ?, ?, 1)`
+                                db.run(insertStatQuery, [counterId, today, selectedService.name], (err) => {
+                                    if (err) {
+                                        return reject(new Error("Error accessing the Stat table"));
+                                    }
+                                });
+                            }
+                            else {
+                                const updateStatQuery = `UPDATE Stat
+                                                        SET numCustomers = numCustomers + 1
+                                                        WHERE idCounter = ? AND date = ? AND nameService = ?`
+                                db.run(updateStatQuery, [counterId, today, selectedService.name], (err) => {
+                                    if (err) {
+                                        return reject(new Error("Error accessing the Stat table"));
+                                    }
+                                });
+                            }
+                        });
+                        
                         resolve({
                             nextCustomerNumber,
                             counterId,
