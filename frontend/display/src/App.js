@@ -37,6 +37,7 @@ function App() {
           <thead>
             <tr className="first_row">
               <th>Code</th>
+              <th>Service</th>
               <th>Counter</th>
             </tr>
           </thead>
@@ -44,6 +45,7 @@ function App() {
           {notifications.map((notification, index) => (
              <tr key={index}>
              <td>{notification.customerNumber}</td>
+             <td>{notification.service}</td>
               <td>{notification.counterId}</td>
            </tr>
           ))}
