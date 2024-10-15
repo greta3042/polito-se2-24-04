@@ -1,11 +1,14 @@
 import ServiceDao from './dao/service.mjs';
+import StatisticDao from './dao/statistic.mjs';
 import cors from'cors';
 import express from 'express';
 import { createServer } from 'http';
 import { Server } from 'socket.io'; // Import socket.io using ES modules
+import StatisticDao from './dao/statistic.mjs';
 
 const app = express();
 const serviceDao = new ServiceDao();
+const statisticDao = new StatisticDao();
 const PORT = 3001;
 const PORT1 = 4001;
 
@@ -149,7 +152,19 @@ app.post('/api/callNextCustomer', async (req, res) => {
   }
 });
 
-
+/* Get all customers for each counter API */
+app.get('/api/getCustomersForEachCounter', async (req, res) => {
+  try {
+      const result = await statisticDao.getCustomersForEachCounter();
+      res.json(result);
+  } catch (err) {
+      if (err.message === "No stats for any counter") {
+          res.status(404).json({ error: "No stats for any counter" });
+      } else {
+        res.status(500).json({ error: "Internal server error" }); 
+      }
+  }
+});
 
 /* ACTIVATING THE SERVER */
 let server = app.listen(PORT, () => {
