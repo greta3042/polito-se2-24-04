@@ -206,4 +206,14 @@ describe("getCounters", () => {
         await expect(service.getCounters()).rejects.toThrow("No counter found");
     });
 
+    test("Database error occurs", async () => {
+        const dbError = new Error("Database error");
+
+        jest.spyOn(db, 'all').mockImplementation((query, callback) => {
+            callback(dbError, null);
+        });
+
+        await expect(service.getCounters()).rejects.toThrow("No counter found");
+    });
+
 });
