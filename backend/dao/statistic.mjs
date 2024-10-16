@@ -75,4 +75,83 @@ export default class StatisticDao{
             });
         })
     }    
+
+    getCustomersForServiceByDay(day) {
+        return new Promise((resolve, reject) => {
+            const statQuery = "SELECT date, nameService, SUM(numCustomers) AS totalCustomers FROM Stat WHERE date = ? GROUP BY date, nameService";
+            
+            db.all(statQuery, [day], (err, stats) => {
+                if (err) {
+                    return reject(new Error("Error retrieving stats"));
+                } else {
+                    stats.forEach(stat => {
+                        console.log(`Date: ${stat.date}, Service: ${stat.nameService}, Total Customers: ${stat.totalCustomers}`);
+                    });
+                    resolve(stats);  
+                }
+            });
+        });
+    }
+
+    getCustomersForServiceByWeek(week, year) {
+        return new Promise((resolve, reject) => {
+            // Format the week
+            const weekStr = week.toString().padStart(2, '0');
+            const yearStr = year.toString();
+    
+            const statQuery = `
+                SELECT 
+                    strftime('%W', date) AS week, 
+                    strftime('%Y', date) AS year, 
+                    nameService, 
+                    SUM(numCustomers) AS totalCustomers 
+                FROM Stat 
+                WHERE strftime('%W', date) = ? 
+                  AND strftime('%Y', date) = ? 
+                GROUP BY week, year, nameService
+            `;
+    
+            db.all(statQuery, [weekStr, yearStr], (err, stats) => {
+                if (err) {
+                    return reject(new Error("Error retrieving stats: " + err.message));
+                } else {
+                    stats.forEach(stat => {
+                        console.log(`Week: ${stat.week}, Year: ${stat.year}, Service: ${stat.nameService}, Total Customers: ${stat.totalCustomers}`);
+                    });
+                    resolve(stats);  
+                }
+            });
+        });
+    }
+
+    getCustomersForServiceByMonth(month, year) {
+        return new Promise((resolve, reject) => {
+            // Format the month
+            const monthStr = month.toString().padStart(2, '0');
+            const yearStr = year.toString();
+    
+            const statQuery = `
+                SELECT 
+                    strftime('%m', date) AS month, 
+                    strftime('%Y', date) AS year, 
+                    nameService, 
+                    SUM(numCustomers) AS totalCustomers 
+                FROM Stat 
+                WHERE strftime('%m', date) = ? 
+                  AND strftime('%Y', date) = ? 
+                GROUP BY month, year, nameService
+            `;
+    
+            db.all(statQuery, [monthStr, yearStr], (err, stats) => {
+                if (err) {
+                    return reject(new Error("Error retrieving stats: " + err.message));
+                } else {
+                    stats.forEach(stat => {
+                        console.log(`Month: ${stat.month}, Year: ${stat.year}, Service: ${stat.nameService}, Total Customers: ${stat.totalCustomers}`);
+                    });
+                    resolve(stats);  
+                }
+            });
+        });
+    }
 }

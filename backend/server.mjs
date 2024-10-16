@@ -199,11 +199,54 @@ app.get('/api/getOverallStats', async (req, res) => {
   }
 });
 
+// Route to get the customers served per service on a specific day
+app.get('/api/statistics/customersForServiceOnDay/:day', async (req, res) => {
+  const day = req.params.day;
+  try {
+      const result = await statisticDao.getCustomersForServiceByDay(day);
+      res.json(result);
+  } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: 'Failed to retrieve stats' });
+  }
+});
 
+// Route to get the customers served per service on a specific week of a year
+app.get('/api/statistics/customersForServiceOnWeek/:week/:year', (req, res) => {
+  const week = parseInt(req.params.week);  // Take the week from the URL
+  const year = parseInt(req.params.year);  // Take the year from the URL
+  
+  // Check input
+  if (isNaN(week) || isNaN(year) || week < 1 || week > 53) {
+      return res.status(400).json({ error: "Invalid week or year" });
+  }
 
+  statisticDao.getCustomersForServiceByWeek(week, year)
+      .then(stats => {
+          res.json(stats);  // Return data in JSON format
+      })
+      .catch(err => {
+          res.status(500).json({ error: err.message });
+      });
+});
 
+app.get('/api/statistics/customersForServiceOnMonth/:month/:year', (req, res) => {
+  const month = parseInt(req.params.month);
+  const year = parseInt(req.params.year);
 
+  // Check input
+  if (isNaN(month) || isNaN(year) || month < 1 || month > 12) {
+      return res.status(400).json({ error: "Invalid month or year" });
+  }
 
+  statisticDao.getCustomersForServiceByMonth(month, year)
+      .then(stats => {
+          res.json(stats);
+      })
+      .catch(err => {
+          res.status(500).json({ error: err.message });
+      });
+});
 
 /* ACTIVATING THE SERVER */
 let server = app.listen(PORT, () => {

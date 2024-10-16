@@ -55,6 +55,14 @@ Accept: application/json
 GET http://localhost:3001/api/getOverallStats?period=weekly
 Accept: application/json
 
+### Get the number of customers served for each service type by day
+GET http://localhost:3001/api/statistics/customersForServiceOnDay/2024-10-15
+
+### Get the number of customers served for each service type by week
+GET http://localhost:3001/api/statistics/customersForServiceOnWeek/42/2024
+
+### Get the number of customers served for each service type by month
+GET http://localhost:3001/api/statistics/customersForServiceOnMonth/10/2024
 
 
 
