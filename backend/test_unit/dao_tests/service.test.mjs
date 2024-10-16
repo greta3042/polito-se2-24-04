@@ -88,7 +88,7 @@ describe("GET services", () => {
 describe("callNextCustomer", () => {
     test("Successfully call next customer", async () => {
         const counterNumber = 1;
-        const nextCustomer = {nextCustomerNumber: 2, counterId: counterNumber, serviceName: "TestService1"};
+        const nextCustomer = {nextCustomerNumber: 2, counterId: counterNumber, serviceName: "TestService1", newQueueLength: 2,};
         const spyGet = jest.spyOn(db, 'get')
             .mockImplementation((sql, params, callback) => {
                 return callback(null, {id: 1});
