@@ -118,6 +118,7 @@ export default class ServiceDao{
                     }
     
                     const nextCustomerNumber = selectedService.currentCustomer + 1;
+                    const currentQueueLength = selectedService.queueLen;
                     const updateQueueQuery = `
                         UPDATE Service 
                         SET currentCustomer = currentCustomer + 1, queueLen = queueLen - 1 
@@ -162,6 +163,7 @@ export default class ServiceDao{
                             nextCustomerNumber,
                             counterId,
                             serviceName: selectedService.name,
+                            newQueueLength: currentQueueLength - 1,
                         });
                     });
                 });
