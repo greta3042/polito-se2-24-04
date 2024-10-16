@@ -80,3 +80,40 @@ describe("GET getDailyCustomersForEachCounterByService", () => {
         await expect(statDao.getDailyCustomersForEachCounterByService()).rejects.toThrow("Error accessing the Stat table: Database access error");
     });
 });
+
+describe("GET getWeeklyCustomersForEachCounterByService", () => {
+
+    test("Successfully retrieves weekly customers for each counter by service", async () => {
+        const weekStart = dayjs().startOf('week').format('YYYY-MM-DD');
+        const weekEnd = dayjs().endOf('week').format('YYYY-MM-DD');
+        const mockRows = [
+            { date: weekStart, week: '42', counterId: 1, serviceName: "Shipping", totalCustomers: 10 },
+            { date: weekStart, week: '42', counterId: 2, serviceName: "Smart card", totalCustomers: 15 }
+        ];
+
+        jest.spyOn(db, 'all').mockImplementation((query, callback) => {
+            callback(null, mockRows);
+        });
+
+        const result = await statDao.getWeeklyCustomersForEachCounterByService();
+        expect(result).toEqual(mockRows);
+    });
+
+    test("No weekly stats found for any counter and service", async () => {
+        jest.spyOn(db, 'all').mockImplementation((query, callback) => {
+            callback(null, []);  // Nessun risultato
+        });
+
+        await expect(statDao.getWeeklyCustomersForEachCounterByService()).rejects.toThrow("No weekly stats found for any counter and service.");
+    });
+
+    test("Error accessing the Stat table", async () => {
+        const dbError = new Error("Database access error");
+
+        jest.spyOn(db, 'all').mockImplementation((query, callback) => {
+            callback(dbError, null);
+        });
+
+        await expect(statDao.getWeeklyCustomersForEachCounterByService()).rejects.toThrow("Error accessing the Stat table: Database access error");
+    });
+});
