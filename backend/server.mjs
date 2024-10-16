@@ -180,6 +180,28 @@ app.get('/api/getCustomersForEachCounterByService', async (req, res) => {
   }
 });
 
+// Get overall stats for each service type
+app.get('/api/getOverallStats', async (req, res) => {
+  try{
+    const {period} = req.query; 
+    if (!period || !['daily', 'weekly'].includes(period)){
+      return res.status(400).json({error: "Invalid period. Use daily or weekly"})
+    }
+
+    const result = await statisticDao.getOverallStats(period);
+    res.json(result);
+  } catch (err) {
+    if (err.message === "No stats found for the given period"){
+      res.status(400).json({error: "No stats found for the given period"});
+    } else {
+      res.status(500).json({ error: "Internal server error"})
+    }
+  }
+});
+
+
+
+
 
 
 

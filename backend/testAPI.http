@@ -47,6 +47,14 @@ Accept: application/json
 GET http://localhost:3001/api/getCustomersForEachCounterByService
 Accept: application/json
 
+### Daily Stats
+GET http://localhost:3001/api/getOverallStats?period=daily
+Accept: application/json
+
+### Weekly Stats
+GET http://localhost:3001/api/getOverallStats?period=weekly
+Accept: application/json
+
 
 
 
