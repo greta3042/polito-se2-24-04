@@ -7,16 +7,30 @@ import { useEffect } from 'react';
 function App() {
   const [notifications, setNotifications] = useState([]);  
 
+  // Fill notifications at the start with all the counters
+  const fetchCounters = async () => {
+    try {
+      const response = await fetch('http://localhost:3001/api/counters');
+      const data = await response.json();
+      setNotifications(data.map(counterId => {
+        return { counterId: String(counterId.id), service: '', customerNumber: 'No customer being served' };
+      }));
+    } catch (error) {
+      console.error('Error fetching counters:', error);
+    }
+  };
+
   useEffect(() => {
 
-    // Fill notifications at the start with all the counters
-
+    // Call fetchCounters to load initial data
+    fetchCounters();
 
     const socket = io('http://localhost:4001'); // Backend server URL
 
     // Callback called when a notification is received
     socket.on('nextCustomer', (data) => {
-
+      console.log(notifications);
+      console.log(data);
       // Update the state with information to display for counters
       setNotifications(notifications.map(notification =>
         notification.counterId === data.counterId
@@ -29,7 +43,7 @@ function App() {
     return () => {
         socket.disconnect();
     };
-}); // Empty array means that the socket is opened only at the starting at the component and keep listening
+}, []); // Empty array means that the socket is opened only at the starting at the component and keep listening
 
   return (
     <div className="App">
