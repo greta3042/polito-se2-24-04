@@ -62,6 +62,61 @@ describe("GET /api/getDailyCustomersForEachCounterByService", () => {
             });
         const { app } = await import('../../server'); 
         const response = await request(app).get(`${baseURL}getDailyCustomersForEachCounterByService`);
+
+        expect(response.status).toBe(500);
+        expect(response.body).toEqual({ error: "Internal server error" });
+        expect(spyDao).toHaveBeenCalledTimes(1);
+    });
+});
+
+describe("GET /api/getWeeklyCustomersForEachCounterByService", () => {
+    test("Successfully got weekly customers for each counter by service", async () => {
+        const weeklyStats = [
+            {
+                counterId: 1,
+                serviceType: 'Shipping',
+                customerCount: 140,
+            },
+            {
+                counterId: 2,
+                serviceType: 'Smart card',
+                customerCount: 105,
+            },
+        ];
+
+        const spyDao = jest.spyOn(StatisticDao.prototype, "getWeeklyCustomersForEachCounterByService")
+            .mockResolvedValueOnce(weeklyStats);
+        const { app } = await import('../../server'); 
+        const response = await request(app).get(`${baseURL}getWeeklyCustomersForEachCounterByService`);
+
+        expect(response.status).toBe(200);
+        expect(response.body).toEqual(weeklyStats);
+        expect(spyDao).toHaveBeenCalledTimes(1);
+    });
+
+    test("No weekly stats available - error 404", async () => {
+        const errorMessage = "No weekly stats";
+        const spyDao = jest.spyOn(StatisticDao.prototype, "getWeeklyCustomersForEachCounterByService")
+            .mockImplementationOnce(() => {
+                throw new Error(errorMessage);
+            });
+        const { app } = await import('../../server'); 
+        const response = await request(app).get(`${baseURL}getWeeklyCustomersForEachCounterByService`);
+
+        expect(response.status).toBe(404);
+        expect(response.body).toEqual({ error: errorMessage });
+        expect(spyDao).toHaveBeenCalledTimes(1);
+    });
+
+    test("Internal server error - error 500", async () => {
+        const errorMessage = "Database connection failed";
+        const spyDao = jest.spyOn(StatisticDao.prototype, "getWeeklyCustomersForEachCounterByService")
+            .mockImplementationOnce(() => {
+                throw new Error(errorMessage);
+            });
+
+        const { app } = await import('../../server'); 
+        const response = await request(app).get(`${baseURL}getWeeklyCustomersForEachCounterByService`);
         
         expect(response.status).toBe(500);
         expect(response.body).toEqual({ error: "Internal server error" });
