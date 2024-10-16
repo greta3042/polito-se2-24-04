@@ -18,7 +18,9 @@ body {
   }
   
   .choose-service-title {
-    margin-bottom: 20px;
+    padding-bottom: 0.4em;
+    padding-right: 2em;
+    padding-left: 2em;;
   }
   
   .services-list {
@@ -35,6 +37,7 @@ body {
     border-radius: 4px;
     cursor: pointer;
     width: 100%; /* Make buttons take full width */
+    font-size: 0.9em;
   }
   
   .button_service:hover {

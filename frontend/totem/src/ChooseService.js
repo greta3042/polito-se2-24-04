@@ -35,7 +35,7 @@ function ChooseService(props) {
 
   return (
     <div className="choose-service-container">
-      <h1 className="choose-service-title">Choose a Service</h1>
+      <h2 className="choose-service-title">Choose a Service</h2>
       <div className="services-list">
         {services.map((service, index) => (
           <button className="button_service" key={index} onClick={() => handleServiceClick(service)}>

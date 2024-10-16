@@ -41,7 +41,7 @@ body {
     border: none;
     border-radius: 6px;
     cursor: pointer;
-    font-size: 13px;
+    font-size: 0.9em;
   }
   
   button:hover {
