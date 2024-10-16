@@ -80,6 +80,40 @@ describe("GET getCustomersForServiceByDay", () => {
 
 });
 
+describe("GET getCustomersForServiceByWeek", () => {
+
+    test("Successfully retrieves weekly customers for each service", async () => {
+        const mockRows = [
+            { week: '42', serviceName: "Shipping", totalCustomers: 10 },
+            { week: '42', serviceName: "Smart card", totalCustomers: 15 }
+        ];
+
+        jest.spyOn(db, 'all').mockImplementation((query, callback) => {
+            callback(null, mockRows);
+        });
+
+        const result = await statDao.getCustomersForServiceByWeek();
+        expect(result).toEqual(mockRows);
+    });
+
+    test("No weekly stats found for any service", async () => {
+        jest.spyOn(db, 'all').mockImplementation((query, callback) => {
+            callback(null, []);  // Nessun risultato
+        });
+
+        await expect(statDao.getCustomersForServiceByWeek()).rejects.toThrow(Error);
+    });
+
+    test("Error accessing the Stat table", async () => {
+        jest.spyOn(db, 'all').mockImplementation((query, callback) => {
+            callback(new Error(), null);
+        });
+
+        await expect(statDao.getCustomersForServiceByWeek()).rejects.toThrow(Error);
+    });
+
+});
+
 describe("GET getDailyCustomersForEachCounterByService", () => {
 
     test("Successfully retrieves daily customers for each counter by service", async () => {
