@@ -162,3 +162,33 @@ describe("GET /api/statistics/customersForServiceByDay", () => {
         expect(spyDao).toHaveBeenCalledTimes(1);
     });
 });
+
+describe("GET /api/statistics/customersForServiceByWeek", () => {
+    test("Successfully got weekly customers for each service", async () => {
+        const weeklyStats = [
+            { week: '42', serviceName: "Shipping", totalCustomers: 10 },
+            { week: '42', serviceName: "Smart card", totalCustomers: 15 }
+        ];
+
+        const spyDao = jest.spyOn(StatisticDao.prototype, "getCustomersForServiceByWeek")
+            .mockResolvedValueOnce(weeklyStats);
+        const { app } = await import('../../server'); 
+        const response = await request(app).get(`${baseURL}statistics/customersForServiceByWeek`);
+
+        expect(response.status).toBe(200);
+        expect(response.body).toEqual(weeklyStats);
+        expect(spyDao).toHaveBeenCalledTimes(1);
+        
+    });
+
+    test("Internal server error - error 500", async () => {
+        const spyDao = jest.spyOn(StatisticDao.prototype, "getCustomersForServiceByWeek")
+                        .mockRejectedValueOnce(new Error());
+
+        const { app } = await import('../../server'); 
+        const response = await request(app).get(`${baseURL}statistics/customersForServiceByWeek`);
+        
+        expect(response.status).toBe(500);
+        expect(spyDao).toHaveBeenCalledTimes(1);
+    });
+});
