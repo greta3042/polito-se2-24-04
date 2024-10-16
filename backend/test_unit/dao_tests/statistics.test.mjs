@@ -117,3 +117,39 @@ describe("GET getWeeklyCustomersForEachCounterByService", () => {
         await expect(statDao.getWeeklyCustomersForEachCounterByService()).rejects.toThrow("Error accessing the Stat table: Database access error");
     });
 });
+
+describe("GET getMonthlyCustomersForEachCounterByService", () => {
+
+    test("Successfully retrieves monthly customers for each counter by service", async () => {
+        const mockMonth = dayjs().format('YYYY-MM'); // Ottieni il mese attuale
+        const mockRows = [
+            { month: mockMonth, counterId: 1, serviceName: "Shipping", totalCustomers: 20 },
+            { month: mockMonth, counterId: 2, serviceName: "Smart card", totalCustomers: 30 }
+        ];
+
+        jest.spyOn(db, 'all').mockImplementation((query, callback) => {
+            callback(null, mockRows);
+        });
+
+        const result = await statDao.getMonthlyCustomersForEachCounterByService();
+        expect(result).toEqual(mockRows);
+    });
+
+    test("No monthly stats found for any counter and service", async () => {
+        jest.spyOn(db, 'all').mockImplementation((query, callback) => {
+            callback(null, []);  // Nessun risultato
+        });
+
+        await expect(statDao.getMonthlyCustomersForEachCounterByService()).rejects.toThrow("No monthly stats found for any counter and service.");
+    });
+
+    test("Error accessing the Stat table", async () => {
+        const dbError = new Error("Database access error");
+
+        jest.spyOn(db, 'all').mockImplementation((query, callback) => {
+            callback(dbError, null);
+        });
+
+        await expect(statDao.getMonthlyCustomersForEachCounterByService()).rejects.toThrow("Error accessing the Stat table: Database access error");
+    });
+});
