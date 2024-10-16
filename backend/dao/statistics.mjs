@@ -6,7 +6,7 @@ export default class StatisticDao{
         return new Promise((resolve, reject) => {
             const query = `SELECT idCounter, date, SUM(numCustomers) AS numCustomers
                             FROM Stat
-                            GROUP BY idCounter, date`
+                            GROUP BY idCounter, date`;
             db.all(query,(err, rows) => {
                 if(err)
                     reject(new Error("Error accessing the Stat table"));
@@ -21,7 +21,7 @@ export default class StatisticDao{
         return new Promise((resolve, reject) => {
             const query = `SELECT idCounter, strftime('%Y-%W', date) AS week, SUM(numCustomers) AS numCustomers
                             FROM Stat
-                            GROUP BY idCounter, week`
+                            GROUP BY idCounter, week`;
             db.all(query,(err, rows) => {
                 if(err)
                     reject(new Error("Error accessing the Stat table"));
@@ -32,6 +32,20 @@ export default class StatisticDao{
         });
     }
 
+    getCustomersForEachCounterByMonth() {
+        return new Promise((resolve, reject) => {
+            const query = `SELECT idCounter, strftime('%Y-%m', date) AS month, SUM(numCustomers) AS numCustomers
+                            FROM Stat
+                            GROUP BY idCounter, month`;
+            db.all(query,(err, rows) => {
+                if(err)
+                    reject(new Error("Error accessing the Stat table"));
+                if(rows.length === 0)
+                    reject(new Error("No stats for any counter"));
+                resolve(rows);
+            });
+        });
+    }
     
     // getCustomersForEachCounterByService() {
     //     return new Promise((resolve, reject) => {
