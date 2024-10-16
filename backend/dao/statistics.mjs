@@ -94,9 +94,8 @@ export default class StatisticDao{
             const query = `
                 SELECT date, nameService, SUM(numCustomers) AS totalCustomers
                 FROM Stat
-                GROUP BY date, nameService
-            `;
-    
+                GROUP BY date, nameService`;
+
             db.all(query, (err, rows) => {
                 if (err) {
                     return reject(new Error("Error accessing the Stat table"));
@@ -104,7 +103,7 @@ export default class StatisticDao{
                 if (rows.length === 0) {
                     return reject(new Error("No stats for any service"));
                 }
-                
+            
                 resolve(rows);
             });
         });
