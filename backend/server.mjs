@@ -180,6 +180,20 @@ app.get('/api/statistics/getCustomersForEachCounterByWeek', async (req, res) => 
   }
 });
 
+/* Get all customers for each counter by month API */
+app.get('/api/statistics/getCustomersForEachCounterByMonth', async (req, res) => {
+  try {
+      const result = await statisticDao.getCustomersForEachCounterByMonth();
+      res.json(result);
+  } catch (err) {
+      if (err.message === "No stats for any counter") {
+          res.status(404).json({ error: "No stats for any counter" });
+      } else {
+        res.status(500).json({ error: "Internal server error" }); 
+      }
+  }
+});
+
 // Get customers for each counter divided by service type
 // app.get('/api/getCustomersForEachCounterByService', async (req, res) => {
 //   try {
