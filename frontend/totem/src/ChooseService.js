@@ -23,10 +23,9 @@ function ChooseService(props) {
     })
       .then(response => response.json())
       .then(data => {
-       // Assumi che data.ticket sia una stringa contenente sia il codice del biglietto che il nome del servizio separati da uno spazio
-      
-      props.setCode(data.ticket.split(' ')[0]);
-      props.setServiceName(data.ticket.split(' ')[1]);
+      // data.ticket contains {ticketNumber: xxx, ticketService "xxx"}
+      props.setCode(data.ticket.ticketNumber);
+      props.setServiceName(data.ticket.ticketService);
 
       navigate('/qrcodepage');
       })

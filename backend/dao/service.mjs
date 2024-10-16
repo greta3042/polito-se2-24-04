@@ -42,7 +42,10 @@ export default class ServiceDao{
                         if (err) {
                             reject(new Error("Error updating service queue length"));  // Gestisci l'errore
                         } else {
-                            resolve(`${ticket.code} ${ticket.serviceName}`);  // Risolvi la Promise con il ticket
+                            resolve({
+                                ticketNumber: ticket.code,
+                                ticketService: ticket.serviceName
+                                });  // Risolvi la Promise con il ticket
                         }
                     });
                 }
