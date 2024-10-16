@@ -16,4 +16,29 @@ export default class StatisticDao{
             });
         });
     }
+
+    
+    getCustomersForEachCounterByService() {
+        return new Promise((resolve, reject) => {
+            const query = `
+                SELECT cs.counterId, s.name AS serviceName, SUM(st.numCustomers) AS numCustomers
+                FROM Stat st
+                JOIN CounterService cs ON st.nameService = cs.serviceName
+                JOIN Service s ON cs.serviceName = s.name
+                GROUP BY cs.counterId, s.name
+                ORDER BY cs.counterId, s.name
+            `;
+    
+            db.all(query, (err, rows) => {
+                if (err) {
+                    console.error("Database error:", err);
+                    return reject(new Error("Error accessing the Stat table: " + err.message));
+                }
+                if (!rows || rows.length === 0) {
+                    return reject(new Error("No stats found for any counter and service."));
+                }
+                resolve(rows);
+            });
+        });
+    }      
 }

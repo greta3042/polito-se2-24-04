@@ -22,7 +22,7 @@ POST http://localhost:3001/api/callNextCustomer
 Content-Type: application/json
 
 {
-    "counterId": "2"
+    "counterId": "4"
 }
 
 ### Add a new service
@@ -36,6 +36,17 @@ Content-Type: application/json
 
 ### List all services
 GET http://localhost:3001/api/services
+
+
+### Getting Customers for Each Counter
+GET http://localhost:3001/api/getCustomersForEachCounter
+Accept: application/json
+
+
+### Get customers for each counter by service type
+GET http://localhost:3001/api/getCustomersForEachCounterByService
+Accept: application/json
+
 
 
 

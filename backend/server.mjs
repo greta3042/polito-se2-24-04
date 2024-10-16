@@ -4,7 +4,7 @@ import cors from'cors';
 import express from 'express';
 import { createServer } from 'http';
 import { Server } from 'socket.io'; // Import socket.io using ES modules
-import StatisticDao from './dao/statistic.mjs';
+//import StatisticDao from './dao/statistic.mjs';
 
 const app = express();
 const serviceDao = new ServiceDao();
@@ -165,6 +165,23 @@ app.get('/api/getCustomersForEachCounter', async (req, res) => {
       }
   }
 });
+
+// Get customers for each counter divided by service type
+app.get('/api/getCustomersForEachCounterByService', async (req, res) => {
+  try {
+      const result = await statisticDao.getCustomersForEachCounterByService();
+      res.json(result);
+  } catch (err) {
+      if (err.message === "No stats found for any counter and service") {
+          return res.status(404).json({ error: "No stats found for any counter and service" });
+      } else {
+          return res.status(500).json({ error: "Internal server error" });
+      }
+  }
+});
+
+
+
 
 /* ACTIVATING THE SERVER */
 let server = app.listen(PORT, () => {
