@@ -2,11 +2,26 @@ import db from '../db/db.mjs';
 import dayjs from 'dayjs';
 
 export default class StatisticDao{
-    getCustomersForEachCounter() {
+    getCustomersForEachCounterByDay() {
         return new Promise((resolve, reject) => {
-            const query = `SELECT idCounter, SUM(numCustomers) AS numCustomers
+            const query = `SELECT idCounter, date, SUM(numCustomers) AS numCustomers
                             FROM Stat
-                            GROUP BY idCounter`
+                            GROUP BY idCounter, date`
+            db.all(query,(err, rows) => {
+                if(err)
+                    reject(new Error("Error accessing the Stat table"));
+                if(rows.length === 0)
+                    reject(new Error("No stats for any counter"));
+                resolve(rows);
+            });
+        });
+    }
+
+    getCustomersForEachCounterByWeek() {
+        return new Promise((resolve, reject) => {
+            const query = `SELECT idCounter, strftime('%Y-%W', date) AS week, SUM(numCustomers) AS numCustomers
+                            FROM Stat
+                            GROUP BY idCounter, week`
             db.all(query,(err, rows) => {
                 if(err)
                     reject(new Error("Error accessing the Stat table"));
