@@ -6,9 +6,17 @@ import Button from 'react-bootstrap/Button'; // Button import
 
 function QRCodePage(props) {
   const navigate = useNavigate();
-  const [ticket, setTicket] = useState(props.code + " " + props.serviceName);
+  const ticket = props.code && props.serviceName ? props.code + " " + props.serviceName : "";
+
 
   useEffect(() => {
+    if (ticket == ''){
+      navigate('/');
+    }
+  }, [])
+
+  useEffect(() => {
+    
     const timer = setTimeout(() => {
       navigate('/');
     }, 60000); // 60000 milliseconds = 1 minute
@@ -20,7 +28,6 @@ function QRCodePage(props) {
   const handleBackClick = () => {
     navigate('/');
   };
-
   
     return (
         <div className="centered-container">
