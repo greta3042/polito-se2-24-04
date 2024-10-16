@@ -34,7 +34,7 @@ describe("POST newTicket", () => {
         const response = await request(app).post(baseURL + "newTicket").send({ serviceName: "TestService" });
 
         expect(response.status).toBe(200);
-        expect(response.body.ticket).toBe(ticket);
+        expect(response.body.ticket).toEqual(ticket);
         expect(spyDao).toHaveBeenCalledTimes(1);
         expect(spyDao).toHaveBeenCalledWith(
             "TestService"
