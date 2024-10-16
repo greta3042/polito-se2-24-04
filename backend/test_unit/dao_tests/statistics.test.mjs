@@ -45,6 +45,41 @@ describe("GET getCustomersForEachCounterByDay", () => {
 
 });
 
+describe("GET getCustomersForServiceByDay", () => {
+
+    test("Successfully retrieves daily customers for each service", async () => {
+        const mockDate = dayjs().format('YYYY-MM-DD');
+        const mockRows = [
+            { date: mockDate, serviceName: "Shipping", totalCustomers: 10 },
+            { date: mockDate, serviceName: "Smart card", totalCustomers: 15 }
+        ];
+
+        jest.spyOn(db, 'all').mockImplementation((query, callback) => {
+            callback(null, mockRows);
+        });
+
+        const result = await statDao.getCustomersForServiceByDay();
+        expect(result).toEqual(mockRows);
+    });
+
+    test("No daily stats found for any service", async () => {
+        jest.spyOn(db, 'all').mockImplementation((query, callback) => {
+            callback(null, []);  // Nessun risultato
+        });
+
+        await expect(statDao.getCustomersForServiceByDay()).rejects.toThrow(Error);
+    });
+
+    test("Error accessing the Stat table", async () => {
+        jest.spyOn(db, 'all').mockImplementation((query, callback) => {
+            callback(new Error(), null);
+        });
+
+        await expect(statDao.getCustomersForServiceByDay()).rejects.toThrow(Error);
+    });
+
+});
+
 describe("GET getDailyCustomersForEachCounterByService", () => {
 
     test("Successfully retrieves daily customers for each counter by service", async () => {

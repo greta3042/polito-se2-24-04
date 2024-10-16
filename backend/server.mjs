@@ -37,7 +37,7 @@ io.on('connection', (socket) => {
 
   // Handle disconnection
   socket.on('disconnect', () => {
-    console.log('frontend disconnected');
+    //console.log('frontend disconnected');
   });
 });
 
