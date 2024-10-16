@@ -192,3 +192,34 @@ describe("GET /api/statistics/customersForServiceByWeek", () => {
         expect(spyDao).toHaveBeenCalledTimes(1);
     });
 });
+
+describe("GET /api/statistics/customersForServiceByMonth", () => {
+    test("Successfully got monthly customers for each service", async () => {
+        const mockMonth = dayjs().format('YYYY-MM'); // Ottieni il mese attuale
+        const monthlyStats = [
+            { month: mockMonth, serviceName: "Shipping", totalCustomers: 20 },
+            { month: mockMonth, serviceName: "Smart card", totalCustomers: 30 }
+        ];
+
+        const spyDao = jest.spyOn(StatisticDao.prototype, "getCustomersForServiceByMonth")
+            .mockResolvedValueOnce(monthlyStats);
+        const { app } = await import('../../server'); 
+        const response = await request(app).get(`${baseURL}statistics/customersForServiceByMonth`);
+
+        expect(response.status).toBe(200);
+        expect(response.body).toEqual(monthlyStats);
+        expect(spyDao).toHaveBeenCalledTimes(1);
+        
+    });
+
+    test("Internal server error - error 500", async () => {
+        const spyDao = jest.spyOn(StatisticDao.prototype, "getCustomersForServiceByMonth")
+                        .mockRejectedValueOnce(new Error());
+
+        const { app } = await import('../../server'); 
+        const response = await request(app).get(`${baseURL}statistics/customersForServiceByMonth`);
+        
+        expect(response.status).toBe(500);
+        expect(spyDao).toHaveBeenCalledTimes(1);
+    });
+});
