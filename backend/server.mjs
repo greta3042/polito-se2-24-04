@@ -152,10 +152,24 @@ app.post('/api/callNextCustomer', async (req, res) => {
   }
 });
 
-/* Get all customers for each counter API */
-app.get('/api/getCustomersForEachCounterByDay', async (req, res) => {
+/* Get all customers for each counter by day API */
+app.get('/api/statistics/getCustomersForEachCounterByDay', async (req, res) => {
   try {
-      const result = await statisticDao.getCustomersForEachCounter();
+      const result = await statisticDao.getCustomersForEachCounterByDay();
+      res.json(result);
+  } catch (err) {
+      if (err.message === "No stats for any counter") {
+          res.status(404).json({ error: "No stats for any counter" });
+      } else {
+        res.status(500).json({ error: "Internal server error" }); 
+      }
+  }
+});
+
+/* Get all customers for each counter by week API */
+app.get('/api/statistics/getCustomersForEachCounterByWeek', async (req, res) => {
+  try {
+      const result = await statisticDao.getCustomersForEachCounterByWeek();
       res.json(result);
   } catch (err) {
       if (err.message === "No stats for any counter") {
