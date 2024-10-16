@@ -5,12 +5,13 @@ import { useEffect } from 'react';
 
 
 function App() {
-  const [notifications, setNotifications] = useState([]);
-  
-  // Use the correct backend URL
-  
+  const [notifications, setNotifications] = useState([]);  
 
   useEffect(() => {
+
+    // Fill notifications at the start with all the counters
+    
+
     const socket = io('http://localhost:4001'); // Backend server URL
 
     // Callback called when a notification is received
@@ -21,7 +22,8 @@ function App() {
         notification.counterId === data.counterId
           ? data  // Replace the entry with the same counterId
           : notification) // Keep the other entries unchanged
-        )  
+        );
+
     });
 
     // Cleanup to disconnect component at component life end
@@ -38,17 +40,17 @@ function App() {
         <table className="display_table" border="1">
           <thead>
             <tr className="first_row">
-              <th>Code</th>
-              <th>Service</th>
               <th>Counter</th>
+              <th>Service</th>
+              <th>Customer</th>
             </tr>
           </thead>
           <tbody>
           {notifications.map((notification, index) => (
              <tr key={index}>
-             <td>{notification.customerNumber}</td>
+             <td>{notification.counterId}</td>
              <td>{notification.service}</td>
-              <td>{notification.counterId}</td>
+             <td>{notification.customerNumber}</td>
            </tr>
           ))}
           </tbody>
