@@ -72,7 +72,7 @@ export default class StatisticDao{
     // }  
     
 
-    getCustomersForServiceByDay(day) {
+    /*getCustomersForServiceByDay(day) {
         return new Promise((resolve, reject) => {
             const statQuery = "SELECT date, nameService, SUM(numCustomers) AS totalCustomers FROM Stat WHERE date = ? GROUP BY date, nameService";
             
@@ -87,9 +87,31 @@ export default class StatisticDao{
                 }
             });
         });
+    }*/
+
+    getCustomersForServiceByDay() {
+        return new Promise((resolve, reject) => {
+            const query = `
+                SELECT date, nameService, SUM(numCustomers) AS totalCustomers
+                FROM Stat
+                GROUP BY date, nameService
+            `;
+    
+            db.all(query, (err, rows) => {
+                if (err) {
+                    return reject(new Error("Error accessing the Stat table"));
+                }
+                if (rows.length === 0) {
+                    return reject(new Error("No stats for any service"));
+                }
+                
+                resolve(rows);
+            });
+        });
     }
 
-    getCustomersForServiceByWeek(week, year) {
+
+    /*getCustomersForServiceByWeek(week, year) {
         return new Promise((resolve, reject) => {
             // Format the week
             const weekStr = week.toString().padStart(2, '0');
@@ -118,9 +140,36 @@ export default class StatisticDao{
                 }
             });
         });
+    }*/
+
+    getCustomersForServiceByWeek() {
+        return new Promise((resolve, reject) => {
+            const query = `
+                SELECT 
+                    strftime('%Y-%W', date) AS week, 
+                    nameService, 
+                    SUM(numCustomers) AS totalCustomers 
+                FROM Stat 
+                GROUP BY week, nameService
+            `;
+    
+            db.all(query, (err, stats) => {
+                if (err) {
+                    return reject(new Error("Error retrieving stats: " + err.message));
+                }
+                if (stats.length === 0) {
+                    return reject(new Error("No stats for any service"));
+                }
+    
+                stats.forEach(stat => {
+                    console.log(`Week: ${stat.week}, Service: ${stat.nameService}, Total Customers: ${stat.totalCustomers}`);
+                });
+                resolve(stats);  
+            });
+        });
     }
 
-    getCustomersForServiceByMonth(month, year) {
+    /*getCustomersForServiceByMonth(month, year) {
         return new Promise((resolve, reject) => {
             // Format the month
             const monthStr = month.toString().padStart(2, '0');
@@ -147,6 +196,33 @@ export default class StatisticDao{
                     });
                     resolve(stats);  
                 }
+            });
+        });
+    }*/
+
+    getCustomersForServiceByMonth() {
+        return new Promise((resolve, reject) => {
+            const query = `
+                SELECT 
+                    strftime('%Y-%m', date) AS month, 
+                    nameService, 
+                    SUM(numCustomers) AS totalCustomers 
+                FROM Stat 
+                GROUP BY month, nameService
+            `;
+    
+            db.all(query, (err, stats) => {
+                if (err) {
+                    return reject(new Error("Error retrieving stats: " + err.message));
+                }
+                if (stats.length === 0) {
+                    return reject(new Error("No stats for any service"));
+                }
+    
+                stats.forEach(stat => {
+                    console.log(`Month: ${stat.month}, Service: ${stat.nameService}, Total Customers: ${stat.totalCustomers}`);
+                });
+                resolve(stats);  
             });
         });
     }

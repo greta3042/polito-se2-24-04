@@ -209,7 +209,7 @@ app.get('/api/statistics/getCustomersForEachCounterByMonth', async (req, res) =>
 // });
 
 // Route to get the customers served per service on a specific day
-app.get('/api/statistics/customersForServiceOnDay/:day', async (req, res) => {
+/*app.get('/api/statistics/customersForServiceOnDay/:day', async (req, res) => {
   const day = req.params.day;
   try {
       const result = await statisticDao.getCustomersForServiceByDay(day);
@@ -218,9 +218,20 @@ app.get('/api/statistics/customersForServiceOnDay/:day', async (req, res) => {
       console.error(error);
       res.status(500).json({ error: 'Failed to retrieve stats' });
   }
+});*/
+
+// Route to get the customers served per service, grouped by day
+app.get('/api/statistics/customersForServiceByDay', async (req, res) => {
+  try {
+      const result = await statisticDao.getCustomersForServiceByDay();
+      res.json(result);
+  } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: 'Failed to retrieve stats' });
+  }
 });
 
-// Route to get the customers served per service on a specific week of a year
+/*// Route to get the customers served per service on a specific week of a year
 app.get('/api/statistics/customersForServiceOnWeek/:week/:year', (req, res) => {
   const week = parseInt(req.params.week);  // Take the week from the URL
   const year = parseInt(req.params.year);  // Take the year from the URL
@@ -237,9 +248,19 @@ app.get('/api/statistics/customersForServiceOnWeek/:week/:year', (req, res) => {
       .catch(err => {
           res.status(500).json({ error: err.message });
       });
+});*/
+
+// Route to get the customers served per service, grouped by week
+app.get('/api/statistics/customersForServiceByWeek', async (req, res) => {
+  try {
+      const stats = await statisticDao.getCustomersForServiceByWeek();
+      res.json(stats);  // Return data in JSON format
+  } catch (err) {
+      res.status(500).json({ error: err.message });
+  }
 });
 
-app.get('/api/statistics/customersForServiceOnMonth/:month/:year', (req, res) => {
+/*app.get('/api/statistics/customersForServiceOnMonth/:month/:year', (req, res) => {
   const month = parseInt(req.params.month);
   const year = parseInt(req.params.year);
 
@@ -255,6 +276,16 @@ app.get('/api/statistics/customersForServiceOnMonth/:month/:year', (req, res) =>
       .catch(err => {
           res.status(500).json({ error: err.message });
       });
+});*/
+
+// Route to get the customers served per service, grouped by month
+app.get('/api/statistics/customersForServiceByMonth', async (req, res) => {
+  try {
+      const stats = await statisticDao.getCustomersForServiceByMonth();
+      res.json(stats);  // Return data in JSON format
+  } catch (err) {
+      res.status(500).json({ error: err.message });
+  }
 });
 
 
