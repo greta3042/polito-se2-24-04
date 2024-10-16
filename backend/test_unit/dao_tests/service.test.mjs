@@ -14,7 +14,7 @@ afterEach(()=>{
 
 describe("GET newTicket", () => {
     test("Successfully got a new ticket", async () => {
-        const ticket = "1 TestService";
+        const ticket = {"ticketNumber": 1,"ticketService": "TestService"};
         const spyGet = jest.spyOn(db, 'get')
             .mockImplementation((sql, params, callback) => {
                 return callback(null, {name: "TestService", serviceTime: 15, currentCustomer:  0, queueLen: 0});
@@ -24,7 +24,7 @@ describe("GET newTicket", () => {
                 return callback(null);
             });
         const result = await service.newTicket("TestService");
-        expect(result).toBe(ticket);
+        expect(result).toEqual(ticket);
     });
 
     test("Service not found", async () => {
