@@ -40,5 +40,39 @@ export default class StatisticDao{
                 resolve(rows);
             });
         });
-    }      
+    }  
+
+    getOverallStats(period){
+        return new Promise ((resolve, reject) => {
+            let dateCondition = '';
+            const today = dayjs();
+    
+            if (period === 'daily') {
+                const date = today.format('YYYY-MM-DD');
+                dateCondition = `WHERE date = '${date}'`;  
+            } else if (period === 'weekly') {
+                const weekStart = today.startOf('week').format('YYYY-MM-DD');
+                const weekEnd = today.endOf('week').format('YYYY-MM-DD');  
+                dateCondition = `WHERE date BETWEEN '${weekStart}' AND '${weekEnd}'`;
+            } else {
+                return reject(new Error("Invalid period. Use 'daily' or 'weekly'."));
+            }
+    
+            const query = `
+                SELECT date, nameService, SUM(numCustomers) AS numCustomers
+                FROM Stat
+                ${dateCondition}
+                GROUP BY date, nameService
+                ORDER BY nameService, date
+            `;
+
+            db.all(query, (err, rows) => {
+                if(err)
+                    reject(new Error("Error accessing the Stat table"));
+                if(rows.length === 0)
+                    reject(new Error("No stats found for the given period"));
+                resolve(rows);
+            });
+        })
+    }    
 }
