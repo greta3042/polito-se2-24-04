@@ -10,7 +10,7 @@ function App() {
   useEffect(() => {
 
     // Fill notifications at the start with all the counters
-    
+
 
     const socket = io('http://localhost:4001'); // Backend server URL
 
@@ -20,10 +20,9 @@ function App() {
       // Update the state with information to display for counters
       setNotifications(notifications.map(notification =>
         notification.counterId === data.counterId
-          ? data  // Replace the entry with the same counterId
-          : notification) // Keep the other entries unchanged
+          ? data            // Replace the entry with the same counterId
+          : notification)   // Keep the other entries unchanged
         );
-
     });
 
     // Cleanup to disconnect component at component life end
@@ -32,11 +31,8 @@ function App() {
     };
 }); // Empty array means that the socket is opened only at the starting at the component and keep listening
 
-
-
   return (
     <div className="App">
-      <header className="App-header">
         <table className="display_table" border="1">
           <thead>
             <tr className="first_row">
@@ -46,16 +42,15 @@ function App() {
             </tr>
           </thead>
           <tbody>
-          {notifications.map((notification, index) => (
-             <tr key={index}>
-             <td>{notification.counterId}</td>
-             <td>{notification.service}</td>
-             <td>{notification.customerNumber}</td>
-           </tr>
+            {notifications.map((notification, index) => (
+              <tr key={index}>
+                <td>{notification.counterId}</td>
+                <td>{notification.service}</td>
+                <td>{notification.customerNumber}</td>
+              </tr>
           ))}
           </tbody>
         </table>
-      </header>
     </div>
   );
 }
