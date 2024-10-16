@@ -106,14 +106,13 @@ describe("GET services", () => {
 describe("POST callNextCustomer", () => {
     test("Successfully call next customer", async () => {
         const counterNumber = 1;
-        const nextCustomer = {nextCustomerNumber: 2, counterId: counterNumber, serviceName: "TestService1"};
-        const message = {message: `Now serving customer ${nextCustomer.nextCustomerNumber} at Counter ${nextCustomer.counterId} for service ${nextCustomer.serviceName}`};
+        const nextCustomer = {nextCustomerNumber: 2, counterId: counterNumber, serviceName: "TestService1", newQueueLength: 5};
         const spyDao = jest.spyOn(ServiceDao.prototype, "callNextCustomer").mockResolvedValueOnce(nextCustomer);
 
         const app = (await import("../../server")).app;
         const response = (await request(app).post(baseURL + "callNextCustomer").send({counterId: counterNumber}));
         expect(response.status).toBe(200);
-        expect(response.body).toEqual(message);
+        expect(response.body).toEqual(nextCustomer);
         expect(spyDao).toHaveBeenCalledTimes(1);
     });
 
