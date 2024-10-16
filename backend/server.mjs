@@ -167,37 +167,18 @@ app.get('/api/getCustomersForEachCounter', async (req, res) => {
 });
 
 // Get customers for each counter divided by service type
-app.get('/api/getCustomersForEachCounterByService', async (req, res) => {
-  try {
-      const result = await statisticDao.getCustomersForEachCounterByService();
-      res.json(result);
-  } catch (err) {
-      if (err.message === "No stats found for any counter and service") {
-          return res.status(404).json({ error: "No stats found for any counter and service" });
-      } else {
-          return res.status(500).json({ error: "Internal server error" });
-      }
-  }
-});
-
-// Get overall stats for each service type
-app.get('/api/getOverallStats', async (req, res) => {
-  try{
-    const {period} = req.query; 
-    if (!period || !['daily', 'weekly'].includes(period)){
-      return res.status(400).json({error: "Invalid period. Use daily or weekly"})
-    }
-
-    const result = await statisticDao.getOverallStats(period);
-    res.json(result);
-  } catch (err) {
-    if (err.message === "No stats found for the given period"){
-      res.status(400).json({error: "No stats found for the given period"});
-    } else {
-      res.status(500).json({ error: "Internal server error"})
-    }
-  }
-});
+// app.get('/api/getCustomersForEachCounterByService', async (req, res) => {
+//   try {
+//       const result = await statisticDao.getCustomersForEachCounterByService();
+//       res.json(result);
+//   } catch (err) {
+//       if (err.message === "No stats found for any counter and service") {
+//           return res.status(404).json({ error: "No stats found for any counter and service" });
+//       } else {
+//           return res.status(500).json({ error: "Internal server error" });
+//       }
+//   }
+// });
 
 // Route to get the customers served per service on a specific day
 app.get('/api/statistics/customersForServiceOnDay/:day', async (req, res) => {
@@ -248,6 +229,50 @@ app.get('/api/statistics/customersForServiceOnMonth/:month/:year', (req, res) =>
       });
 });
 
+
+// Get daily stats for customers at each counter by service type
+app.get('/api/getDailyCustomersForEachCounterByService', async (req, res) => {
+  try {
+      const result = await statisticDao.getDailyCustomersForEachCounterByService();
+      res.json(result);
+  } catch (err) {
+      if (err.message.includes("No daily stats")) {
+          return res.status(404).json({ error: err.message });
+      } else {
+          return res.status(500).json({ error: "Internal server error" });
+      }
+  }
+});
+
+app.get('/api/getWeeklyCustomersForEachCounterByService', async (req, res) => {
+  try {
+      const result = await statisticDao.getWeeklyCustomersForEachCounterByService();
+      res.json(result);
+  } catch (err) {
+      if (err.message.includes("No weekly stats found")) {
+          return res.status(404).json({ error: err.message });
+      } else {
+          console.error("API Error:", err);
+          return res.status(500).json({ error: "Internal server error" });
+      }
+  }
+});
+
+
+ // Get monthly stats for customers at each counter by service type
+ app.get('/api/getMonthlyCustomersForEachCounterByService', async (req, res) => {
+  try {
+      const result = await statisticDao.getMonthlyCustomersForEachCounterByService();
+      res.json(result);
+  } catch (err) {
+      if (err.message.includes("No monthly stats")) {
+          return res.status(404).json({ error: err.message });
+      } else {
+          return res.status(500).json({ error: "Internal server error" });
+      }
+  }
+});
+
 /* ACTIVATING THE SERVER */
 let server = app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
@@ -255,6 +280,25 @@ let server = app.listen(PORT, () => {
 
 let socket = server1.listen(PORT1, () => {
   console.log(`Socket.io server is running on port ${PORT1}`);
+});
+
+// Get overall stats for each service type
+app.get('/api/getOverallStats', async (req, res) => {
+  try{
+    const {period} = req.query; 
+    if (!period || !['daily', 'weekly'].includes(period)){
+      return res.status(400).json({error: "Invalid period. Use daily or weekly"})
+    }
+
+    const result = await statisticDao.getOverallStats(period);
+    res.json(result);
+  } catch (err) {
+    if (err.message === "No stats found for the given period"){
+      res.status(400).json({error: "No stats found for the given period"});
+    } else {
+      res.status(500).json({ error: "Internal server error"})
+    }
+  }
 });
 
 export { app, server, socket }

@@ -18,63 +18,30 @@ export default class StatisticDao{
     }
 
     
-    getCustomersForEachCounterByService() {
-        return new Promise((resolve, reject) => {
-            const query = `
-                SELECT cs.counterId, s.name AS serviceName, SUM(st.numCustomers) AS numCustomers
-                FROM Stat st
-                JOIN CounterService cs ON st.nameService = cs.serviceName
-                JOIN Service s ON cs.serviceName = s.name
-                GROUP BY cs.counterId, s.name
-                ORDER BY cs.counterId, s.name
-            `;
+    // getCustomersForEachCounterByService() {
+    //     return new Promise((resolve, reject) => {
+    //         const query = `
+    //             SELECT cs.counterId, s.name AS serviceName, SUM(st.numCustomers) AS numCustomers
+    //             FROM Stat st
+    //             JOIN CounterService cs ON st.nameService = cs.serviceName
+    //             JOIN Service s ON cs.serviceName = s.name
+    //             GROUP BY cs.counterId, s.name
+    //             ORDER BY cs.counterId, s.name
+    //         `;
     
-            db.all(query, (err, rows) => {
-                if (err) {
-                    console.error("Database error:", err);
-                    return reject(new Error("Error accessing the Stat table: " + err.message));
-                }
-                if (!rows || rows.length === 0) {
-                    return reject(new Error("No stats found for any counter and service."));
-                }
-                resolve(rows);
-            });
-        });
-    }  
-
-    getOverallStats(period){
-        return new Promise ((resolve, reject) => {
-            let dateCondition = '';
-            const today = dayjs();
+    //         db.all(query, (err, rows) => {
+    //             if (err) {
+    //                 console.error("Database error:", err);
+    //                 return reject(new Error("Error accessing the Stat table: " + err.message));
+    //             }
+    //             if (!rows || rows.length === 0) {
+    //                 return reject(new Error("No stats found for any counter and service."));
+    //             }
+    //             resolve(rows);
+    //         });
+    //     });
+    // }  
     
-            if (period === 'daily') {
-                const date = today.format('YYYY-MM-DD');
-                dateCondition = `WHERE date = '${date}'`;  
-            } else if (period === 'weekly') {
-                const weekStart = today.startOf('week').format('YYYY-MM-DD');
-                const weekEnd = today.endOf('week').format('YYYY-MM-DD');  
-                dateCondition = `WHERE date BETWEEN '${weekStart}' AND '${weekEnd}'`;
-            } else {
-                return reject(new Error("Invalid period. Use 'daily' or 'weekly'."));
-            }
-    
-            const query = `
-                SELECT date, nameService, SUM(numCustomers) AS numCustomers
-                FROM Stat
-                ${dateCondition}
-                GROUP BY date, nameService
-                ORDER BY nameService, date
-            `;
-
-            db.all(query, (err, rows) => {
-                if(err)
-                    reject(new Error("Error accessing the Stat table"));
-                if(rows.length === 0)
-                    reject(new Error("No stats found for the given period"));
-                resolve(rows);
-            });
-        })
-    }    
 
     getCustomersForServiceByDay(day) {
         return new Promise((resolve, reject) => {
@@ -154,4 +121,127 @@ export default class StatisticDao{
             });
         });
     }
+
+
+    getDailyCustomersForEachCounterByService() {
+        return new Promise((resolve, reject) => {
+            const date = dayjs().format('YYYY-MM-DD');
+            const query = `
+                SELECT st.date, cs.counterId, s.name AS serviceName, SUM(st.numCustomers) AS totalCustomers
+                FROM Stat st
+                JOIN CounterService cs ON st.nameService = cs.serviceName
+                JOIN Service s ON cs.serviceName = s.name
+                WHERE st.date = '${date}'
+                GROUP BY st.date, cs.counterId, s.name
+                ORDER BY st.date, cs.counterId, s.name
+            `;
+    
+            db.all(query, (err, rows) => {
+                if (err) {
+                    console.error("Database error:", err);
+                    return reject(new Error("Error accessing the Stat table: " + err.message));
+                }
+                if (!rows || rows.length === 0) {
+                    return reject(new Error("No daily stats found for any counter and service."));
+                }
+                resolve(rows);
+            });
+        });
+    }
+
+    getWeeklyCustomersForEachCounterByService() {
+        return new Promise((resolve, reject) => {
+            const weekStart = dayjs().startOf('week').format('YYYY-MM-DD');
+            const weekEnd = dayjs().endOf('week').format('YYYY-MM-DD');
+            const query = `
+                SELECT 
+                    st.date, 
+                    strftime('%W', st.date) AS week, 
+                    cs.counterId, 
+                    s.name AS serviceName, 
+                    SUM(st.numCustomers) AS totalCustomers
+                FROM Stat st
+                JOIN CounterService cs ON st.nameService = cs.serviceName
+                JOIN Service s ON cs.serviceName = s.name
+                WHERE st.date BETWEEN '${weekStart}' AND '${weekEnd}'
+                GROUP BY st.date, week, cs.counterId, s.name
+                ORDER BY st.date, cs.counterId, s.name
+            `;
+    
+            db.all(query, (err, rows) => {
+                if (err) {
+                    console.error("Database error:", err);
+                    return reject(new Error("Error accessing the Stat table: " + err.message));
+                }
+                if (!rows || rows.length === 0) {
+                    return reject(new Error("No weekly stats found for any counter and service."));
+                }
+                resolve(rows);
+            });
+        });
+    }
+
+    getMonthlyCustomersForEachCounterByService() {
+        return new Promise((resolve, reject) => {
+            const query = `
+                SELECT 
+                    strftime('%Y-%m', st.date) AS month, 
+                    cs.counterId, 
+                    s.name AS serviceName, 
+                    SUM(st.numCustomers) AS totalCustomers
+                FROM Stat st
+                JOIN CounterService cs ON st.nameService = cs.serviceName
+                JOIN Service s ON cs.serviceName = s.name
+                WHERE st.date BETWEEN date('now', 'start of month') AND date('now', 'start of month', '+1 month', '-1 day')
+                GROUP BY month, cs.counterId, s.name
+                ORDER BY month, cs.counterId, s.name
+            `;
+    
+            db.all(query, (err, rows) => {
+                if (err) {
+                    console.error("Database error:", err);
+                    return reject(new Error("Error accessing the Stat table: " + err.message));
+                }
+                if (!rows || rows.length === 0) {
+                    return reject(new Error("No monthly stats found for any counter and service."));
+                }
+                resolve(rows);
+            });
+        });
+    }  
+    
+    getOverallStats(period){
+        return new Promise ((resolve, reject) => {
+            let dateCondition = '';
+            const today = dayjs();
+    
+            if (period === 'daily') {
+                const date = today.format('YYYY-MM-DD');
+                dateCondition = `WHERE date = '${date}'`;  
+            } else if (period === 'weekly') {
+                const weekStart = today.startOf('week').format('YYYY-MM-DD');
+                const weekEnd = today.endOf('week').format('YYYY-MM-DD');  
+                dateCondition = `WHERE date BETWEEN '${weekStart}' AND '${weekEnd}'`;
+            } else {
+                return reject(new Error("Invalid period. Use 'daily' or 'weekly'."));
+            }
+    
+            const query = `
+                SELECT date, nameService, SUM(numCustomers) AS numCustomers
+                FROM Stat
+                ${dateCondition}
+                GROUP BY date, nameService
+                ORDER BY nameService, date
+            `;
+
+            db.all(query, (err, rows) => {
+                if(err)
+                    reject(new Error("Error accessing the Stat table"));
+                if(rows.length === 0)
+                    reject(new Error("No stats found for the given period"));
+                resolve(rows);
+            });
+        })
+    }
+    
 }

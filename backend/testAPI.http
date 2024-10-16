@@ -67,3 +67,14 @@ GET http://localhost:3001/api/statistics/customersForServiceOnMonth/10/2024
 
 
  
+### Get Daily Stats
+GET http://localhost:3001/api/getDailyCustomersForEachCounterByService
+Content-Type: application/json
+
+### Get Weekly Stats
+GET http://localhost:3001/api/getWeeklyCustomersForEachCounterByService
+Content-Type: application/json
+
+### Get Monthly Stats
+GET http://localhost:3001/api/getMonthlyCustomersForEachCounterByService
+Content-Type: application/json
