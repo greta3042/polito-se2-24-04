@@ -129,16 +129,9 @@ app.post('/api/callNextCustomer', async (req, res) => {
           return res.status(404).json(result); 
       }
 
-      io.emit('nextCustomer', {
-          counterId: result.counterId,
-          service: result.serviceName,
-          customerNumber: result.nextCustomerNumber,
-      });
+      io.emit('nextCustomer', result);
 
-      res.status(200).json({
-          nextCustomerNumber: result.nextCustomerNumber,
-          serviceName: result.serviceName,
-      });
+      res.status(200).json(result);
   } catch (error) {
       if (error.message === "Counter not found") {
           return res.status(404).json({ error: 'Counter not found' });
