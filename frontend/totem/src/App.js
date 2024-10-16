@@ -10,7 +10,7 @@ function App() {
 
   return (
     <Routes>
-    <Route path="/chooseservice" element={<ChooseService setCode = {setCode} setServiceName = {setServiceName}/>} />
+    <Route path="/" element={<ChooseService setCode = {setCode} setServiceName = {setServiceName}/>} />
     <Route path="/qrcodepage"  element={<QRCodePage code = {code} serviceName = {serviceName} />} />
     </Routes>
   );

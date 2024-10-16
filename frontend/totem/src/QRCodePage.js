@@ -10,7 +10,7 @@ function QRCodePage(props) {
 
   useEffect(() => {
     const timer = setTimeout(() => {
-      navigate('/chooseservice');
+      navigate('/');
     }, 60000); // 60000 milliseconds = 1 minute
     
 
@@ -18,7 +18,7 @@ function QRCodePage(props) {
   }, [navigate]);
 
   const handleBackClick = () => {
-    navigate('/chooseservice');
+    navigate('/');
   };
 
   
