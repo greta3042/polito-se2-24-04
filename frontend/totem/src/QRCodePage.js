@@ -31,8 +31,8 @@ function QRCodePage(props) {
   
     return (
         <div className="centered-container">
-           <p>Service Name: {props.serviceName}</p>
-           <p>Ticket Code: {props.code}</p>
+           <p>Service Name: <strong>{props.serviceName}</strong></p>
+           <p>Ticket Code: <strong>{props.code}</strong></p>
           {ticket === 0 ? <h1 className='choose_service_h1'>Select a service</h1> : <h1 className='choose_service_h1'>Here is your ticket</h1>}
           {/* Shows the QR code if the ticket is received from the back-end */}
           {ticket !== 0 && 
