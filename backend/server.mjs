@@ -136,7 +136,8 @@ app.post('/api/callNextCustomer', async (req, res) => {
       });
 
       res.status(200).json({
-          message: `Now serving customer ${result.nextCustomerNumber} at Counter ${result.counterId} for service ${result.serviceName}`,
+          nextCustomerNumber: result.nextCustomerNumber,
+          serviceName: result.serviceName,
       });
   } catch (error) {
       if (error.message === "Counter not found") {

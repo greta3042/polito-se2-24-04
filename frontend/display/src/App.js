@@ -28,8 +28,6 @@ function App() {
     };
 }); // Empty array means that the socket is opened only at the starting at the component and keep listening
 
-
-
   return (
     <div className="App">
       <header className="App-header">
