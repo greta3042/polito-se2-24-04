@@ -15,39 +15,53 @@ afterAll(() => {
 });
 
 describe("GET /api/getDailyCustomersForEachCounterByService", () => {
-    test("Successfully retrieves daily customers for each counter by service", async () => {
-        const mockStats = [
-            { counterId: 1, serviceName: "Shipping", customerCount: 10 },
-            { counterId: 2, serviceName: "Smart card", customerCount: 15 },
+    test("Successfully got daily customers for each counter by service", async () => {
+        const dailyStats = [
+            {
+                counterId: 1,
+                serviceType: 'Shipping',
+                customerCount: 20,
+            },
+            {
+                counterId: 2,
+                serviceType: 'Smart card',
+                customerCount: 15,
+            },
         ];
-        
-        const spyDao = jest.spyOn(statisticDao, "getDailyCustomersForEachCounterByService").mockResolvedValueOnce(mockStats);
 
-        const app = (await import("../../server")).app; // Import the app
-        const response = await request(app).get(baseURL + "getDailyCustomersForEachCounterByService");
+        const spyDao = jest.spyOn(StatisticDao.prototype, "getDailyCustomersForEachCounterByService")
+            .mockResolvedValueOnce(dailyStats);
+        const { app } = await import('../../server'); 
+        const response = await request(app).get(`${baseURL}getDailyCustomersForEachCounterByService`);
 
         expect(response.status).toBe(200);
-        expect(response.body).toEqual(mockStats);
+        expect(response.body).toEqual(dailyStats);
         expect(spyDao).toHaveBeenCalledTimes(1);
     });
 
-    test("No daily stats found - error 404", async () => {
-        const spyDao = jest.spyOn(statisticDao, "getDailyCustomersForEachCounterByService").mockRejectedValueOnce(new Error("No daily stats"));
-
-        const app = (await import("../../server")).app; 
-        const response = await request(app).get(baseURL + "getDailyCustomersForEachCounterByService");
+    test("No daily stats available - error 404", async () => {
+        const errorMessage = "No daily stats";
+        const spyDao = jest.spyOn(StatisticDao.prototype, "getDailyCustomersForEachCounterByService")
+            .mockImplementationOnce(() => {
+                throw new Error(errorMessage);
+            });
+        const { app } = await import('../../server'); 
+        const response = await request(app).get(`${baseURL}getDailyCustomersForEachCounterByService`);
 
         expect(response.status).toBe(404);
-        expect(response.body).toEqual({ error: "No daily stats" });
+        expect(response.body).toEqual({ error: errorMessage });
         expect(spyDao).toHaveBeenCalledTimes(1);
     });
 
-    test("Database error - error 500", async () => {
-        const spyDao = jest.spyOn(statisticDao, "getDailyCustomersForEachCounterByService").mockRejectedValueOnce(new Error("Database error"));
-
-        const app = (await import("../../server")).app; 
-        const response = await request(app).get(baseURL + "getDailyCustomersForEachCounterByService");
-
+    test("Internal server error - error 500", async () => {
+        const errorMessage = "Database connection failed";
+        const spyDao = jest.spyOn(StatisticDao.prototype, "getDailyCustomersForEachCounterByService")
+            .mockImplementationOnce(() => {
+                throw new Error(errorMessage);
+            });
+        const { app } = await import('../../server'); 
+        const response = await request(app).get(`${baseURL}getDailyCustomersForEachCounterByService`);
+        
         expect(response.status).toBe(500);
         expect(response.body).toEqual({ error: "Internal server error" });
         expect(spyDao).toHaveBeenCalledTimes(1);
