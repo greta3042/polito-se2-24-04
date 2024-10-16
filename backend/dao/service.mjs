@@ -91,8 +91,7 @@ export default class ServiceDao{
                 const servicesQuery = `
                     SELECT * FROM Service 
                     WHERE name IN (
-                        SELECT serviceName FROM CounterService WHERE counterId = ?
-                    )`;
+                        SELECT serviceName FROM CounterService WHERE counterId = ?)`;
                 db.all(servicesQuery, [counterId], (err, services) => {
                     if (err || services.length === 0) {
                         return reject(new Error("Error fetching services for counter"));
@@ -132,6 +131,7 @@ export default class ServiceDao{
                             return reject(new Error("Error updating service queue"));
                         }
 
+                        // Update statistics
                         const todayDate = dayjs();
                         const today = todayDate.format('YYYY-MM-DD');
                         const getStatQuery = `SELECT *

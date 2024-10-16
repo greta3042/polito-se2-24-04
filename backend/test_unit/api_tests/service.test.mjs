@@ -27,7 +27,7 @@ afterAll(() => {
 
 describe("POST newTicket", () => {
     test("Successfully got a new ticket", async () => {
-        const ticket = "1 TestService";
+        const ticket = {ticket: {ticketNumber: "1", ticketService: "TestService"}};
         const spyDao = jest.spyOn(ServiceDao.prototype, "newTicket").mockResolvedValueOnce(ticket);
 
         const app = (await import("../../server")).app;
