@@ -14,10 +14,6 @@ function Homepage({counterId}) {
     }
   }, []);
 
-  const handleButtonClick = (buttonName) => {
-    alert(`You clicked ${buttonName}`);
-  };
-
   const handleButtonClick2 = async () => {
     try {
       const response = await fetch('http://localhost:3001/api/callNextCustomer', {
@@ -57,7 +53,6 @@ function Homepage({counterId}) {
         </div>
       
       <div className="button-group">
-        <button onClick={() => handleButtonClick('Button 1')}>Set service code as done</button>
         <button onClick={() => handleButtonClick2()}>Call next customer</button>
       </div>
     </div>
