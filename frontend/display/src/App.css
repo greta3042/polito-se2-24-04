@@ -12,13 +12,13 @@ th, td {
 }
 
 thead tr {
-  background-color: lightgray;
-  font-size: 2.5em;
+  background-color: rgb(77, 151, 194);
+  font-size: 2em;
 }
 
 tbody{
   border-radius: 10px;
-  font-size: 2em;
+  font-size: 1.5em;
 }
 
 tbody tr:nth-child(odd) {
