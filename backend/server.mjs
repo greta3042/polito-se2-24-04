@@ -129,9 +129,19 @@ app.post('/api/callNextCustomer', async (req, res) => {
           return res.status(404).json(result); 
       }
 
-      io.emit('nextCustomer', result);
+      io.emit('nextCustomer', {
+          counterId: result.counterId,
+          service: result.serviceName,
+          customerNumber: result.nextCustomerNumber,
+          newQueueLength: result.newQueueLength
+      });
 
-      res.status(200).json(result);
+      res.status(200).json({
+          nextCustomerNumber: result.nextCustomerNumber,
+          counterId: result.counterId,
+          serviceName: result.serviceName,
+          newQueueLength: result.newQueueLength
+      });
   } catch (error) {
       if (error.message === "Counter not found") {
           return res.status(404).json({ error: 'Counter not found' });
