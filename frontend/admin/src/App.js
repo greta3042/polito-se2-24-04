@@ -1,13 +1,14 @@
-import Login from './Login';
 import Homepage from './Homepage';
 import './App.css';
 import { Routes, Route } from 'react-router-dom';
+import React, { useState } from 'react';
 
 function App() {
+  const [data, setData] = useState([]);
+
   return (
     <Routes>
-    <Route path="/login" element={<Login />} />
-    <Route path="/homepage" element={<Homepage />} />
+    <Route path="/homepage" element={<Homepage setData={setData} data={data}/>} />
     </Routes>
   );
 }
